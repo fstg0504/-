@@ -11,17 +11,19 @@ import * as filters from './filters' // 全局filter
 import './icons' // icon
 import './errorLog'// error log
 import './permission' // 权限
-// import './mock'  // 该项目所有请求使用mockjs模拟
-// import locale from 'element-ui/lib/locale/lang/en'
 import en from '@/locale/en'
 import zh from '@/locale/zh'
+
 Vue.use(VueI18n)
 Vue.use(ElementUI)
+// 设置axios代理
 Vue.prototype.$http = axios
 Vue.prototype.HOST = '/api'
-axios.defaults.baseURL = 'http://192.168.13.13:8888'
+// 由于后台没有配置api前缀 所以这里用axios.defaults.baseURL
+// axios.defaults.baseURL = 'http://192.168.13.13:8888'
+axios.defaults.baseURL = 'http://localhost:8888'
 
-const lang = Cookies.get('lang') || 'zh'
+const lang = 'zh'
 Cookies.set('lang', lang)
 const messages = {
   zh: zh,
@@ -37,6 +39,7 @@ Object.keys(filters).forEach(key => {
 })
 
 Vue.config.productionTip = false
+
 new Vue({
   el: '#app',
   router,

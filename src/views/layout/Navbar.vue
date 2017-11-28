@@ -4,24 +4,22 @@
 		<levelbar></levelbar>
 		<tabs-view></tabs-view>
 		<error-log v-if="log.length>0" class="errLog-container" :logsList="log"></error-log>
-		<screenfull class='screenfull'></screenfull>
-    <div class="switch-lang">
-      <span :class="{ active:zhActive}" @click="switchLang('zh')">中文</span>
-      <span> / </span>
-      <span :class="{active:enActive}" @click="switchLang('en')">En</span>
-    </div>
+    <!--<div class="switch-lang">-->
+      <!--<span :class="{ active:zhActive}" @click="switchLang('zh')">中文</span>-->
+      <!--<span> / </span>-->
+      <!--<span :class="{active:enActive}" @click="switchLang('en')">En</span>-->
+    <!--</div>-->
 		<el-dropdown class="avatar-container" trigger="click">
 			<div class="avatar-wrapper">
+        <span class="ad_name">{{name}}</span>
 				<img class="user-avatar" src="/static/images/header-default.gif">
 				<i class="el-icon-caret-bottom"></i>
 			</div>
 			<el-dropdown-menu class="user-dropdown" slot="dropdown">
 				<router-link class='inlineBlock' to="/">
-					<el-dropdown-item>
-						首页
-					</el-dropdown-item>
+					<el-dropdown-item>{{$t('utils.home')}}</el-dropdown-item>
 				</router-link>
-				<el-dropdown-item divided><span @click="logout" style="display:block;">退出登录</span></el-dropdown-item>
+				<el-dropdown-item divided><span @click="logout" style="display:block;">{{$t('utils.logout')}}</span></el-dropdown-item>
 			</el-dropdown-menu>
 		</el-dropdown>
 	</el-menu>
@@ -36,9 +34,6 @@ import Hamburger from 'components/Hamburger'
 import Screenfull from 'components/Screenfull'
 import ErrorLog from 'components/ErrLog'
 import errLogStore from 'store/errLog'
-// import locale from 'element-ui/lib/locale'
-// import langEn from 'element-ui/lib/locale/lang/en'
-// import langZh from 'element-ui/lib/locale/lang/zh-CN'
 
 export default {
   components: {
@@ -71,7 +66,7 @@ export default {
       this.zhActive = false
       this.enActive = true
     }
-    this.$i18n.locale = 'zh'
+    this.switchLangInit()
   },
   methods: {
     toggleSideBar() {
@@ -109,6 +104,10 @@ export default {
           location.reload()
         }
       }
+    },
+    switchLangInit() {
+      const $lang = Cookies.get('lang') || 'zh'
+      this.$i18n.locale = $lang
     }
   }
 }
@@ -157,6 +156,10 @@ export default {
 							cursor: pointer;
 							margin-top: 5px;
 							position: relative;
+              .ad_name{
+                vertical-align: top;
+                padding-right: 5px;
+              }
 							.user-avatar {
 									width: 40px;
 									height: 40px;

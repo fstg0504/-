@@ -1,5 +1,8 @@
 # vue-element-admin #
 
+# 克隆的 vue-element-admin 地址如下 下面介绍也原作者的介绍
+
+
 [![vue](https://img.shields.io/badge/vue-2.4.2-brightgreen.svg)](https://github.com/vuejs/vue)
 [![element-ui](https://img.shields.io/badge/element--ui-1.4.2-brightgreen.svg)](https://github.com/ElemeFE/element)
 [![license](https://img.shields.io/github/license/mashape/apistatus.svg)](https://github.com/PanJiaChen/vue-element-admin/blob/master/LICENSE)
@@ -211,3 +214,65 @@ If you find this project useful, you can buy me a cup of coffee
 ## License
 
 MIT
+
+# 自己增加了vuei18n的国际化 版本7.0+
+  ```bash
+  # 安装vuei18n
+  npm install vuei18n --save-dev
+  
+  # mian.js 部分代码
+  
+  import Vue from 'vue'
+  import VueI18n from 'vue-i18n'
+  import Cookies from 'js-cookie'
+  import en from '@/locale/en'
+  import zh from '@/locale/zh'
+  
+  Vue.use(VueI18n)
+  const lang = 'zh'
+  Cookies.set('lang', lang) //语言变量设置到cookie
+  const messages = {
+    zh: zh,
+    en: en
+  }
+  const i18n = new VueI18n({
+    locale: lang,
+    messages
+  })
+  ......
+  new Vue({
+    el: '#app',
+    router,
+    store,
+    template: '<App/>',
+    components: { App },
+    i18n  //必需！把翻译的对象设置到vue实例
+  })
+  
+  # 翻译文件格式 zh.js
+  export default {
+    content: {
+      a: '内容'
+    }
+  }
+  # 翻译文件格式 en.js
+  export default {
+    content: {
+      a: 'content'
+    }
+  }
+  # 模板使用 xx.vue
+  <div class="content" :type="item"> 这里是内容 </div>
+  vuei18n写法
+  <div class="content" :type="$t(item)"> {{ $t('content.a')}} </div>
+  
+  # vue实例里面使用
+  this.$t('content.a')
+  或者
+  this.$t(各种变量)
+  
+  # 实例里面设置改变语言
+  const $lang = Cookies.get('lang') || 'zh'
+  this.$i18n.locale = $lang
+  
+  ```

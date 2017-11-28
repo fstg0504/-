@@ -2,14 +2,16 @@
   <div class="app-container">
     <div class="wrapper">
       <div class="components-container">
-        <code>
-          知情同意书富文本
-        </code>
+        <p>知情同意书富文本</p>
         <div>
           <div class="typeFilter">
             <template>
               <el-radio v-model="crowd" label="1">{{$t('userManagement.assignCrowd')}}</el-radio>
               <el-radio v-model="crowd" label="2">{{$t('userManagement.assignCrowdNot')}}</el-radio>
+            </template>
+            <template>
+              <el-radio v-model="language" label="1">中文</el-radio>
+              <el-radio v-model="language" label="2">英文</el-radio>
             </template>
           </div>
           <tinymce :height='200' v-model="content" @changeContent="setTinymceId"></tinymce>
@@ -38,6 +40,7 @@
         content: '',
         contentId: '',
         crowd: '1',
+        language: '1',
         contentType: 2,
         tinymceId: ''
       }
@@ -51,7 +54,7 @@
           id: this.contentId,
           crowd: this.crowd,
           type: this.contentType,
-          language: this.getLang(),
+          language: this.language,
           content: this.content
         }
         this.$http({
@@ -59,6 +62,12 @@
           url: '/updateContent',
           data: Qs.stringify(opt)
         }).then(response => {
+          this.$notify({
+            title: '成功',
+            message: '保存成功',
+            type: 'success',
+            duration: 2000
+          })
           this.getContent()
         }, response => {
           console.log('失败：' + response)
@@ -68,7 +77,7 @@
         const opt = {
           crowd: this.crowd,
           type: this.contentType,
-          language: this.getLang()
+          language: this.language
         }
         this.$http.get('/getContent', { params: opt }).then(response => {
           const contentObj = response.data.data[0]
@@ -96,6 +105,9 @@
     },
     watch: {
       crowd() {
+        this.getContent()
+      },
+      language() {
         this.getContent()
       }
     }

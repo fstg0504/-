@@ -2,10 +2,14 @@
   <div class="app-container">
     <div class="wrapper">
       <div class="components-container">
-        <code>
-          研究介绍富文本
-        </code>
+        <p>研究介绍富文本</p>
         <div>
+          <div class="typeFilter">
+            <template>
+              <el-radio v-model="language" label="1">中文</el-radio>
+              <el-radio v-model="language" label="2">英文</el-radio>
+            </template>
+          </div>
           <tinymce :height='200' v-model="content"></tinymce>
           <div class="btn-save"><el-button type="primary" @click="save()">保存</el-button></div>
         </div>
@@ -31,6 +35,7 @@
         contentObj: {},
         content: '',
         contentId: '',
+        language: '1',
         contentType: 1
       }
     },
@@ -51,6 +56,12 @@
           url: '/updateContent',
           data: Qs.stringify(opt)
         }).then(response => {
+          this.$notify({
+            title: '成功',
+            message: '保存成功',
+            type: 'success',
+            duration: 2000
+          })
           this.getContent()
         }, response => {
           console.log('失败：' + response)
@@ -60,7 +71,7 @@
         const opt = {
           crowd: 0,
           type: this.contentType,
-          language: this.getLang()
+          language: this.language
         }
         this.$http.get('/getContent', { params: opt }).then(response => {
           const contentObj = response.data.data[0]
@@ -78,6 +89,11 @@
           return 2
         }
       }
+    },
+    watch: {
+      language() {
+        this.getContent()
+      }
     }
   }
 </script>
@@ -94,7 +110,9 @@
       margin: 10px 0;
       float: right;
     }
+    .typeFilter{margin: 10px 0;}
   }
   .editor-content{
   }
+
 </style>

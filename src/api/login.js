@@ -13,13 +13,9 @@ export function loginByUsername(ad_name, ad_pwd) {
 }
 
 export function logout(token) {
-  const data = {
-    ad_name: token
-  }
   return fetch({
     url: '/logout',
-    method: 'post',
-    data
+    method: 'get'
   })
 }
 

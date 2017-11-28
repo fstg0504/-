@@ -2,7 +2,7 @@
   <div class="app-container calendar-list-container">
     <div class="el-table-container"></div>
     <div class="filter-container">
-      <el-button class="filter-item" style="margin-left: 10px;" @click="handleCreate" type="primary" icon="edit">添加</el-button>
+      <el-button v-if="ad_level.indexOf('1')>-1" class="filter-item" style="margin-left: 10px;" @click="handleCreate" type="primary" icon="edit">添加</el-button>
     </div>
     <el-table :key='tableKey' :data="list" v-loading="listLoading" element-loading-text="给我一点时间" border fit highlight-current-row style="width: 100%">
       <el-table-column type="index"></el-table-column>
@@ -33,8 +33,8 @@
       </el-table-column>
       <el-table-column align="center" :label="$t('utils.handle')" width="200">
         <template scope="scope">
-          <el-button v-if="ad_level.indexOf('admin')>0" size="small" @click="handleUpdate(scope.row)">修改{{ad_level}}</el-button>
-          <el-button v-if="ad_level.indexOf('admin')>0" size="small" type="danger" @click="handleDeleted(scope.row,'deleted')">删除
+          <el-button v-if="ad_level.indexOf('1')>-1" size="small" @click="handleUpdate(scope.row)">修改</el-button>
+          <el-button v-if="ad_level.indexOf('1')>-1" size="small" type="danger" @click="handleDeleted(scope.row,'deleted')">删除
           </el-button>
         </template>
       </el-table-column>
@@ -238,7 +238,9 @@
                   duration: 2000
                 })
               } else {
-                alert(res.msg)
+                this.$alert(res.msg, '', {
+                  confirmButtonText: this.$t('utils.confirm')
+                })
               }
             }, response => {
               console.log('失败：' + response)
@@ -269,7 +271,9 @@
                   duration: 2000
                 })
               } else {
-                alert(res.msg)
+                this.$alert(res.msg, '', {
+                  confirmButtonText: this.$t('utils.confirm')
+                })
               }
             }, response => {
               console.log('失败：' + response)
@@ -297,7 +301,9 @@
               duration: 2000
             })
           } else {
-            alert(res.msg)
+            this.$alert(res.msg, '', {
+              confirmButtonText: this.$t('utils.confirm')
+            })
           }
         }, response => {
           console.log('失败：' + response)

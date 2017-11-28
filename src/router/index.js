@@ -39,10 +39,10 @@ export const constantRouterMap = [
   {
     path: '/',
     component: Layout,
-    redirect: '/auth/index',
-    name: setLang('auth.auth'),
+    redirect: 'userManagement/index',
+    name: setLang('userManagement.userManagement'),
     hidden: true,
-    children: [{ path: 'accountList', component: _import('auth/index'), name: setLang('auth.personalCenter') }]
+    children: [{ path: 'userManagement', component: _import('userManagement/index'), name: setLang('userManagement.userManagement') }]
   },
   {
     path: '/auth',
@@ -51,7 +51,7 @@ export const constantRouterMap = [
     name: setLang('auth.auth'),
     icon: 'lock',
     children: [
-      { path: 'index', component: _import('auth/index'), name: setLang('auth.personalCenter') },
+      { path: 'index', component: _import('auth/index'), name: setLang('auth.personalCenter'), hidden: true },
       { path: 'accountList', component: _import('auth/accountList'), name: setLang('auth.accountList') }
 
     ]
@@ -80,34 +80,14 @@ export const constantRouterMap = [
       { path: 'userFormDetails', component: _import('userManagement/userFormDetails'), name: setLang('userManagement.userFormDetails'), hidden: true }
     ]
   }
-  // {
-  //   path: '/userFormDetails',
-  //   component: Layout,
-  //   redirect: '/userManagement/userFormDetails',
-  //   name: setLang('userManagement.userFormDetails'),
-  //   noDropdown: true,
-  //   children: [{ path: '/userFormDetails', component: _import('userManagement/userFormDetails') }],
-  //   hidden: true
-  // },
 ]
 
 export default new Router({
-  mode: 'history', // 后端支持可开
+  // mode: 'history', // 后端支持可开
   scrollBehavior: () => ({ y: 0 }),
   routes: constantRouterMap
 })
 export const asyncRouterMap = [
-  {
-    path: '/permission',
-    component: Layout,
-    redirect: '/permission/index',
-    name: '权限测试',
-    icon: 'lock',
-    meta: { role: ['admin'] },
-    noDropdown: true,
-    children: [{ path: 'index', component: _import('permission/index'), name: '权限测试页', meta: { role: ['admin'] }}],
-    hidden: true
-  },
   {
     path: '/error',
     component: Layout,
