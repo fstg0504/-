@@ -10,7 +10,7 @@
               <el-radio v-model="language" label="2">英文</el-radio>
             </template>
           </div>
-          <tinymce :height='200' v-model="content"></tinymce>
+          <tinymce :height='200' v-model="content" @changeContent="setTinymceId"></tinymce>
           <div class="btn-save"><el-button type="primary" @click="save()">保存</el-button></div>
         </div>
         <div class="preview-con">
@@ -45,11 +45,10 @@
     methods: {
       save() {
         const opt = {
-          crowd: 0,
+          id: this.contentId,
           type: this.contentType,
-          language: this.getLang(),
-          content: this.content,
-          id: this.contentId
+          language: this.language,
+          content: this.content
         }
         this.$http({
           method: 'post',
@@ -69,7 +68,6 @@
       },
       getContent() {
         const opt = {
-          crowd: 0,
           type: this.contentType,
           language: this.language
         }
@@ -78,6 +76,7 @@
           this.contentObj = contentObj
           this.content = contentObj.content
           this.contentId = contentObj.id
+          this.$nextTick(() => window.tinymce.get(this.tinymceId).setContent(this.content))
         }, response => {
           console.log('失败：' + response)
         })
@@ -88,6 +87,12 @@
         } else {
           return 2
         }
+      },
+      setTinymceId(tinymceId) {
+        this.tinymceId = tinymceId
+      },
+      setContent(val) {
+        window.tinymce.get(this.tinymceId).setContent(val)
       }
     },
     watch: {
@@ -114,5 +119,4 @@
   }
   .editor-content{
   }
-
 </style>

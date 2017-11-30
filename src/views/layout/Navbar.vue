@@ -12,7 +12,7 @@
 		<el-dropdown class="avatar-container" trigger="click">
 			<div class="avatar-wrapper">
         <span class="ad_name">{{name}}</span>
-				<img class="user-avatar" src="/static/images/header-default.gif">
+				<img class="user-avatar" :src="'/static/images/'+ad_level+'.jpg'">
 				<i class="el-icon-caret-bottom"></i>
 			</div>
 			<el-dropdown-menu class="user-dropdown" slot="dropdown">
@@ -54,7 +54,7 @@ export default {
     ...mapGetters([
       'sidebar',
       'name',
-      'avatar'
+      'ad_level'
     ])
   },
   created() {

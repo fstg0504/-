@@ -1,7 +1,7 @@
 <template>
   <div class="app-container calendar-list-container">
     <div class="filter-container">
-      <el-input @keyup.enter.native="handleFilter" style="width: 150px;" class="filter-item" :placeholder="$t('userManagement.enterId')" v-model="listQuery.enterId">
+      <el-input @keyup.enter.native="handleFilter" v-model="listQuery.actorid" style="width: 150px;" class="filter-item" :placeholder="$t('userManagement.enterId')">
       </el-input>
       <div class="block filter-item filter-date">
         <span class="demonstration">{{$t('userManagement.basicInfoTime')}}：</span>
@@ -24,7 +24,7 @@
         </el-date-picker>
       </div>
       <div class="block filter-item filter-date">
-        <span class="demonstration">{{$t('userManagement.userRealTimeLocation')}}：</span>
+        <span class="demonstration">定位开始时间：</span>
         <el-date-picker
           v-model="filterDate3"
           type="daterange"
@@ -33,8 +33,18 @@
           :end-placeholder="$t('utils.endTime')">
         </el-date-picker>
       </div>
+      <div class="block filter-item filter-date">
+        <span class="demonstration">定位结束时间：</span>
+        <el-date-picker
+          v-model="filterDate4"
+          type="daterange"
+          :range-separator="$t('utils.to')"
+          :start-placeholder="$t('utils.startTime')"
+          :end-placeholder="$t('utils.endTime')">
+        </el-date-picker>
+      </div>
 
-      <el-select clearable class="filter-item" style="width: 130px" v-model="listQuery.crowdType" :placeholder="$t('userManagement.crowdtype')">
+      <el-select clearable class="filter-item" style="width: 130px" v-model="listQuery.crowd" :placeholder="$t('userManagement.crowdtype')">
         <el-option v-for="item in  calendarTypeOptions" :key="item.key" :label="item.display_name" :value="item.key">
         </el-option>
       </el-select>
@@ -43,57 +53,65 @@
     </div>
 
     <el-table :key='tableKey' :data="list" v-loading="listLoading" :element-loading-text="$t('utils.loadText')" border fit highlight-current-row style="width: 100%">
-      <el-table-column type="index"></el-table-column>
+      <el-table-column align="center" type="index" width="55"></el-table-column>
       <el-table-column align="center" label="ID" width="65">
         <template scope="scope">
-          <router-link class='inlineBlock' @click.native="setSessionStorage(scope.row)" :to="{path:'/userManagement/userFormDetails'}">
+          <router-link class='inlineBlock' @click.native="setSessionStorage(scope.row)" :to="{path:'/userManagement/userFormDetails'}" title="点击查看用户表单详情">
             {{scope.row.id}}
           </router-link>
         </template>
       </el-table-column>
-      <el-table-column align="center" :label="$t('userManagement.assign')" width="120">
+      <el-table-column align="center" :label="$t('userManagement.assign')" width="100">
         <template scope="scope">
-          <span>{{scope.row.assign==1?$t('utils.yes'):$t('utils.no')}}</span>
+          <span>{{scope.row.crowd==1?$t('utils.yes'):$t('utils.no')}}</span>
         </template>
       </el-table-column>
-
+      <el-table-column align="left" label="设备信息" width="120">
+        <template scope="scope">
+          <span>{{scope.row.equipmentinfo}}</span>
+        </template>
+      </el-table-column>
       <el-table-column align="center" :label="$t('userManagement.basicInfoTime')" >
         <template scope="scope">
-          <span>{{scope.row.basicInfoTime | parseTime('{y}-{m}-{d} {h}:{i}')}}</span>
+          <span>{{new Date(scope.row.registertime).getTime() | parseTime('{y}-{m}-{d} {h}:{i}')}}</span>
         </template>
       </el-table-column>
-      <el-table-column align="center" :label="$t('userManagement.logTime')" >
+      <el-table-column align="center" label="接触日志提交时间" >
         <template scope="scope">
-          <span>{{scope.row.logTime | parseTime('{y}-{m}-{d} {h}:{i}')}}</span>
+          <span>{{new Date(scope.row.sublogtime).getTime() | parseTime('{y}-{m}-{d} {h}:{i}')}}</span>
         </template>
       </el-table-column>
       <el-table-column align="center" :label="$t('userManagement.participantId')" width="120">
         <template scope="scope">
-          <span>{{scope.row.participantId}}</span>
+          <span>{{scope.row.actorid}}</span>
         </template>
       </el-table-column>
       <el-table-column align="center" :label="$t('userManagement.locationStart')" >
         <template scope="scope">
-          <span>{{scope.row.locationStart | parseTime('{y}-{m}-{d} {h}:{i}')}}</span>
+          <span>{{new Date(scope.row.locationstarttime).getTime() | parseTime('{y}-{m}-{d} {h}:{i}')}}</span>
         </template>
       </el-table-column>
       <el-table-column align="center" :label="$t('userManagement.locationEnd')" >
         <template scope="scope">
-          <span>{{scope.row.locationEnd | parseTime('{y}-{m}-{d} {h}:{i}')}}</span>
+          <span>{{new Date(scope.row.locationendtime).getTime() | parseTime('{y}-{m}-{d} {h}:{i}')}}</span>
         </template>
       </el-table-column>
     </el-table>
 
     <div v-show="!listLoading" class="pagination-container">
-      <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page.sync="listQuery.page"
-                     :page-sizes="[10,20,30, 50]" :page-size="listQuery.limit" layout="total, sizes, prev, pager, next, jumper" :total="total">
-      </el-pagination>
+        <el-pagination
+          @size-change="handleSizeChange"
+          @current-change="handleCurrentChange"
+          current-page.sync="1"
+          :page-size="listQuery.length"
+          layout="total, prev, pager, next"
+          :total="total">
+        </el-pagination>
     </div>
   </div>
 </template>
 
 <script>
-  import { fetchList } from '@/api/article'
   import waves from '@/directive/waves/index' // 水波纹指令
   import { parseTime } from '@/utils'
 
@@ -107,53 +125,7 @@
     acc[cur.key] = cur.display_name
     return acc
   }, {})
-  const list = [
-    {
-      id: 1,
-      assign: 1,
-      basicInfoTime: new Date().getTime() + 1256,
-      logTime: new Date().getTime() + 25475,
-      participantId: 5555,
-      locationStart: new Date().getTime() + 25475,
-      locationEnd: new Date().getTime() + 25475
-    },
-    {
-      id: 2,
-      assign: 1,
-      basicInfoTime: new Date().getTime() + 1256,
-      logTime: new Date().getTime() + 25475,
-      participantId: 5555,
-      locationStart: new Date().getTime() + 25475,
-      locationEnd: new Date().getTime() + 25475
-    },
-    {
-      id: 3,
-      assign: 0,
-      basicInfoTime: new Date().getTime() + 1256,
-      logTime: new Date().getTime() + 25475,
-      participantId: 5555,
-      locationStart: new Date().getTime() + 25475,
-      locationEnd: new Date().getTime() + 25475
-    },
-    {
-      id: 4,
-      assign: 1,
-      basicInfoTime: new Date().getTime() + 1256,
-      logTime: new Date().getTime() + 25475,
-      participantId: 5555,
-      locationStart: new Date().getTime() + 25475,
-      locationEnd: new Date().getTime() + 25475
-    },
-    {
-      id: 5,
-      assign: 1,
-      basicInfoTime: new Date().getTime() + 1256,
-      logTime: new Date().getTime() + 25475,
-      participantId: 5555,
-      locationStart: new Date().getTime() + 25475,
-      locationEnd: new Date().getTime() + 25475
-    }
-  ]
+
   export default {
     name: 'user_management_list',
     directives: {
@@ -162,22 +134,26 @@
     data() {
       return {
         list: [],
-        filterDate1: [new Date(2017, 9, 1, 0, 0), new Date()],
-        filterDate2: [new Date(2017, 9, 1, 0, 0), new Date()],
-        filterDate3: [new Date(2017, 9, 1, 0, 0), new Date()],
+//        filterDate1: [new Date(2017, 9, 1, 0, 0), new Date()],
+        filterDate1: ['', ''],
+        filterDate2: ['', ''],
+        filterDate3: ['', ''],
+        filterDate4: ['', ''],
         total: null,
         listLoading: true,
         listQuery: {
-          enterId: undefined,
-          basicInfoTimeStart: undefined,
-          basicInfoTimeEnd: undefined,
-          logTimeStart: undefined,
-          logTimeEnd: undefined,
-          locationTimeStart: undefined,
-          locationTimeEnd: undefined,
-          crowdType: undefined,
-          page: 1,
-          limit: 20
+          start: 0,
+          length: 10,
+          actorid: '',
+          basicInfoTimeStart: '0-0-0 0:0:0',
+          basicInfoTimeEnd: '0-0-0 0:0:0',
+          logTimeStart: '0-0-0 0:0:0',
+          logTimeEnd: '0-0-0 0:0:0',
+          locationTime1Start: '0-0-0 0:0:0',
+          locationTime1End: '0-0-0 0:0:0',
+          locationTime2Start: '0-0-0 0:0:0',
+          locationTime2End: '0-0-0 0:0:0',
+          crowd: ''
         },
         temp: {
           id: undefined,
@@ -193,49 +169,72 @@
       }
     },
     filters: {
-      statusFilter(status) {
-        const statusMap = {
-          published: 'success',
-          draft: 'gray',
-          deleted: 'danger'
-        }
-        return statusMap[status]
-      },
       typeFilter(type) {
         return calendarTypeKeyValue[type]
       }
     },
     created() {
-//    this.getList()
-      this.list = list
-      this.listLoading = false
+      this.listLoading = true
+      this.$http.get('/getUserInfo', { params: this.listQuery }).then(response => {
+        this.listLoading = false
+        const data = response.data
+        if (data.status === 1) {
+          this.list = data.data
+          this.total = data.recordsFiltered
+        } else {
+          this.$message({
+            message: data.data.msg,
+            type: 'warning'
+          })
+        }
+      }, response => {
+        this.$message({
+          message: response.data.data.msg,
+          type: 'warning'
+        })
+      })
     },
     methods: {
       getList() {
         this.listLoading = true
-        fetchList(this.listQuery).then(response => {
-          this.list = response.data.items
-          this.total = response.data.total
+        this.listQuery.basicInfoTimeStart = parseTime(this.filterDate1[0]).toString()
+        this.listQuery.basicInfoTimeEnd = parseTime(this.filterDate1[1]).toString()
+        this.listQuery.logTimeStart = parseTime(this.filterDate2[0]).toString()
+        this.listQuery.logTimeEnd = parseTime(this.filterDate2[1]).toString()
+        this.listQuery.locationTime1Start = parseTime(this.filterDate3[0]).toString()
+        this.listQuery.locationTime1End = parseTime(this.filterDate3[1]).toString()
+        this.listQuery.locationTime2Start = parseTime(this.filterDate4[0]).toString()
+        this.listQuery.locationTime2End = parseTime(this.filterDate4[1]).toString()
+        this.$http.get('/getUserInfo', { params: this.listQuery }).then(response => {
           this.listLoading = false
+          const data = response.data
+          if (data.status === 1) {
+            this.list = data.data
+            this.total = data.recordsFiltered
+          } else {
+            this.$message({
+              message: data.msg,
+              type: 'warning'
+            })
+          }
+        }, response => {
+          this.$message({
+            message: response,
+            type: 'warning'
+          })
+          console.log('失败：' + response)
         })
       },
       handleFilter() {
-        this.listQuery.page = 1
-        this.listQuery.basicInfoTimeStart = this.filterDate1[0]
-        this.listQuery.basicInfoTimeEnd = this.filterDate1[1]
-        this.listQuery.logTimeStart = this.filterDate2[0]
-        this.listQuery.logTimeEnd = this.filterDate2[1]
-        this.listQuery.locationTimeStart = this.filterDate3[0]
-        this.listQuery.locationTimeEnd = this.filterDate3[1]
-//        this.getList()
-        console.log(this.listQuery)
+        this.getList()
       },
       handleSizeChange(val) {
-        this.listQuery.limit = val
+        this.listQuery.start = 0
         this.getList()
       },
       handleCurrentChange(val) {
-        this.listQuery.page = val
+        this.listQuery.start = 0
+        this.listQuery.start = this.listQuery.length * (val - 1)
         this.getList()
       },
       handleDownload() {

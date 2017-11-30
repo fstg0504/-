@@ -5,7 +5,7 @@
       <el-button v-if="ad_level.indexOf('1')>-1" class="filter-item" style="margin-left: 10px;" @click="handleCreate" type="primary" icon="edit">添加</el-button>
     </div>
     <el-table :key='tableKey' :data="list" v-loading="listLoading" element-loading-text="给我一点时间" border fit highlight-current-row style="width: 100%">
-      <el-table-column type="index"></el-table-column>
+      <el-table-column align="center" type="index" width="55"></el-table-column>
       <el-table-column align="center" :label="$t('utils.id')" width="65">
         <template scope="scope">
           <span>{{scope.row.id}}</span>
@@ -39,12 +39,6 @@
         </template>
       </el-table-column>
     </el-table>
-
-    <div v-show="!listLoading" class="pagination-container">
-      <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page.sync="listQuery.page"
-                     :page-sizes="[10,20,30, 50]" :page-size="listQuery.limit" layout="total, sizes, prev, pager, next, jumper" :total="total">
-      </el-pagination>
-    </div>
     <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
       <el-form class="small-space" :model="temp" :rules="rules" ref="user-dialogForm" label-position="left" label-width="100px" style='width: 400px; margin-left:50px;'>
         <el-form-item label="级别">
@@ -86,16 +80,7 @@
     data() {
       return {
         list: [],
-        total: null,
         listLoading: true,
-        listQuery: {
-          page: 1,
-          limit: 20,
-          importance: undefined,
-          title: undefined,
-          type: undefined,
-          sort: '+id'
-        },
         user: {},
         temp: {
           id: undefined,
@@ -126,8 +111,6 @@
           { key: '1', display_name: '1' },
           { key: '2', display_name: '2' }
         ],
-        sortOptions: [{ label: '按ID升序列', key: '+id' }, { label: '按ID降序', key: '-id' }],
-        statusOptions: ['published', 'draft', 'deleted'],
         dialogFormVisible: false,
         dialogStatus: '',
         textMap: {
@@ -171,10 +154,6 @@
       },
       handleSizeChange(val) {
         this.listQuery.limit = val
-        this.getList()
-      },
-      handleCurrentChange(val) {
-        this.listQuery.page = val
         this.getList()
       },
       timeFilter(time) {

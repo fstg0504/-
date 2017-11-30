@@ -6,16 +6,12 @@
         <div>
           <div class="typeFilter">
             <template>
-              <el-radio v-model="crowd" label="1">{{$t('userManagement.assignCrowd')}}</el-radio>
-              <el-radio v-model="crowd" label="2">{{$t('userManagement.assignCrowdNot')}}</el-radio>
-            </template>
-            <template>
               <el-radio v-model="language" label="1">中文</el-radio>
               <el-radio v-model="language" label="2">英文</el-radio>
             </template>
           </div>
           <tinymce :height='200' v-model="content" @changeContent="setTinymceId"></tinymce>
-          <div class="btn-save"><el-button type="primary" @click="save()">{{$t('utils.save')}}</el-button></div>
+          <div class="btn-save"><el-button type="primary" @click="save()">保存</el-button></div>
         </div>
         <div class="preview-con">
           <p class="preview-title">实时预览</p>
@@ -41,8 +37,7 @@
         contentId: '',
         crowd: '1',
         language: '1',
-        contentType: 2,
-        tinymceId: ''
+        contentType: 2
       }
     },
     created() {
@@ -127,5 +122,7 @@
       float: right;
     }
     .typeFilter{margin: 10px 0;}
+  }
+  .editor-content{
   }
 </style>

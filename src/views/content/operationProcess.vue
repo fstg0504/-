@@ -41,7 +41,8 @@
         contentId: '',
         crowd: '1',
         language: '1',
-        contentType: 3
+        contentType: 3,
+        tinymceId: null
       }
     },
     created() {
@@ -125,6 +126,7 @@
       margin: 10px 0;
       float: right;
     }
+    .typeFilter{margin: 10px 0;}
   }
   .editor-content{
   }

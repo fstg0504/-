@@ -39,10 +39,10 @@ export const constantRouterMap = [
   {
     path: '/',
     component: Layout,
-    redirect: 'userManagement/index',
+    redirect: '/userManagement/index',
     name: setLang('userManagement.userManagement'),
     hidden: true,
-    children: [{ path: 'userManagement', component: _import('userManagement/index'), name: setLang('userManagement.userManagement') }]
+    children: [{ path: 'userManagement/index', component: _import('userManagement/index'), name: setLang('userManagement.userManagement') }]
   },
   {
     path: '/auth',
