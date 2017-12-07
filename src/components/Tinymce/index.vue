@@ -25,7 +25,7 @@ export default {
       type: Array,
       required: false,
       default() {
-        return ['removeformat undo redo |  bullist numlist | outdent indent | forecolor | fullscreen code', 'bold italic blockquote | h2 p  media link | alignleft aligncenter alignright']
+        return ['removeformat undo redo |  bullist numlist | outdent indent | forecolor | fontsizeselect | lineheightselect | fullscreen code', 'bold italic blockquote | h2 p link | alignleft aligncenter alignright']
       }
     },
     menubar: {
@@ -61,7 +61,7 @@ export default {
       object_resizing: false,
       toolbar: this.toolbar,
       menubar: this.menubar,
-      plugins: 'advlist,autolink,code,paste,textcolor, colorpicker,fullscreen,link,lists,media,wordcount, imagetools',
+      plugins: 'lineheight,advlist,autolink,code,paste,textcolor, colorpicker,fullscreen,link,lists,media,wordcount, imagetools',
       end_container_on_empty_block: true,
       powerpaste_word_import: 'clean',
       code_dialog_height: 450,
@@ -70,6 +70,9 @@ export default {
       advlist_number_styles: 'default',
       block_formats: '普通标签=p;小标题=h2;',
       imagetools_cors_hosts: ['wpimg.wallstcn.com', 'wallstreetcn.com'],
+      theme_advanced_font_sizes: 'Big text=30px,Small text=small,My Text Size=.mytextsize',
+      fontsize_formats: '12px 14px 16px 18px 20px 22px 24px 26px 30px 40px',
+      lineheight_formats: '12px 14px 16px 18px 20px 22px 24px 26px 30px 40px',
       imagetools_toolbar: 'watermark',
       default_link_target: '_blank',
       link_title: false,

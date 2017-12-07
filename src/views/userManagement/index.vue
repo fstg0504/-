@@ -73,12 +73,14 @@
       </el-table-column>
       <el-table-column align="center" :label="$t('userManagement.basicInfoTime')" >
         <template scope="scope">
-          <span>{{new Date(scope.row.registertime).getTime() | parseTime('{y}-{m}-{d} {h}:{i}')}}</span>
+          <span v-if="scope.row.registertime">{{new Date(scope.row.registertime).getTime() | parseTime('{y}-{m}-{d} {h}:{i}')}}</span>
+          <span v-else>暂无</span>
         </template>
       </el-table-column>
       <el-table-column align="center" label="接触日志提交时间" >
         <template scope="scope">
-          <span>{{new Date(scope.row.sublogtime).getTime() | parseTime('{y}-{m}-{d} {h}:{i}')}}</span>
+          <span v-if="scope.row.sublogtime">{{new Date(scope.row.sublogtime).getTime() | parseTime('{y}-{m}-{d} {h}:{i}')}}</span>
+          <span v-else>占无</span>
         </template>
       </el-table-column>
       <el-table-column align="center" :label="$t('userManagement.participantId')" width="120">

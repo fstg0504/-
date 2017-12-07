@@ -24,7 +24,7 @@
             </el-table-column>
             <el-table-column align="left" :label="$t('userManagement.answer')">
               <template scope="scope">
-                <template v-if="scope.row.id==1||scope.row.id==2||scope.row.id==3||scope.row.id==4||scope.row.id==5||scope.row.id==7||scope.row.id==13||scope.row.id==14">
+                <template v-if="scope.row.id==1||scope.row.id==2||scope.row.id==3||scope.row.id==4||scope.row.id==5||scope.row.id==7||scope.row.id==12||scope.row.id==14||scope.row.id==15">
                   <span>{{scope.row.answer}}</span>
                 </template>
                 <template v-if="scope.row.id==6">
@@ -32,33 +32,32 @@
                   <span>{{scope.row.answer.scope}}</span>
                 </template>
                 <template v-if="scope.row.id==8">
-                  <span>同住人数：{{scope.row.answer.num}}</span>
+                  <span>同住人数：{{scope.row.answer.num}}；</span>
                   <span>同住类型：{{scope.row.answer.type}}</span>
                 </template>
                 <template v-if="scope.row.id==9">
                   <p v-for="item in scope.row.answer">
                     <span>年龄：{{item.age}}；</span>
                     <span>性别：{{item.sex}}；</span>
-                    <span :index="item.relationIndex">关系：{{item.relation}}；</span>
+                    <span>关系：{{item.relation}}；</span>
                   </p>
                 </template>
                 <template v-if="scope.row.id==10">
-                  <span>范围：{{scope.row.answer.scope}}</span>
-                  <span>频率：{{scope.row.answer.hz}}</span>
+                  <p v-for="item in scope.row.answer">
+                    <span>范围：{{item.scope}}；</span>
+                    <span>频率：{{item.hz}}</span>
+                  </p>
                 </template>
                 <template v-if="scope.row.id==11">
-                  <span>范围：{{scope.row.answer.scope}}</span>
-                  <span>频率：{{scope.row.answer.hz}}</span>
+                  <p v-for="item in scope.row.answer">
+                    <span>范围：{{item.scope}}；</span>
+                    <span>频率：{{item.hz}}</span>
+                  </p>
                 </template>
-                <template v-if="scope.row.id==12">
-                  <span>分数：{{scope.row.answer.grade}}</span>
+                <template v-if="scope.row.id==13">
+                  <span>分数：{{scope.row.answer.grade}}；</span>
                   <span>理由：{{scope.row.answer.reson}}</span>
                 </template>
-              </template>
-            </el-table-column>
-            <el-table-column align="center" :label="$t('utils.submitTime')" >
-              <template scope="scope">
-                <span>{{scope.row.submitTime | parseTime('{y}-{m}-{d} {h}:{i}')}}</span>
               </template>
             </el-table-column>
           </el-table>
@@ -82,7 +81,6 @@
                 <span>{{scope.row.question}}</span>
               </template>
             </el-table-column>
-
             <el-table-column align="left" :label="$t('userManagement.answer')" >
               <template scope="scope">
                 <template v-if="scope.row.id==1||scope.row.id==2||scope.row.id==3||scope.row.id==6||scope.row.id==7||scope.row.id==10||scope.row.id==12||scope.row.id==13">
@@ -92,16 +90,18 @@
                   <p v-for="item in scope.row.answer">
                     <span>年龄：{{item.age}}；</span>
                     <span>性别：{{item.sex}}；</span>
+                    <span>接触时间：{{item.cTime}}；</span>
                     <span :index="item.relationIndex">关系：{{item.relation}}；</span>
                     <span>接触类型：{{item.contactType}}；</span>
                     <span>总时间：{{item.contacttime}}；</span>
                     <span>接触地点：{{item.contactLocation}}；</span>
                     <span>平时的接触频率：{{item.contactHz}}；</span>
+                    <span>提交时间：{{item.submitTime | parseTime('{y}-{m}-{d} {h}:{i}')}}；</span>
                   </p>
                 </template>
                 <template v-if="scope.row.id==5">
                   <span v-if="scope.row.answer.state=='是'">{{scope.row.answer.num}}:</span>
-                  <span v-else>估计遗漏数量：{{scope.row.answer.num}}:</span>
+                  <span v-else>估计遗漏数量：{{scope.row.answer.num}}；</span>
                 </template>
                 <template v-if="scope.row.id==8">
                   <p v-for="item in scope.row.answer">
@@ -143,282 +143,6 @@
   import { parseTime } from '@/utils'
   import { mapGetters } from 'vuex'
 
-  const basicList = [
-    {
-      id: 1,
-      answer: '50',
-      submitTime: new Date().getTime()
-    },
-    {
-      id: 2,
-      answer: '其他',
-      answerIndex: '其他',
-      submitTime: new Date().getTime()
-    },
-    {
-      id: 3,
-      answer: '兼职',
-      answerIndex: '2',
-      submitTime: new Date().getTime()
-    },
-    {
-      id: 4,
-      answer: '学龄前',
-      answerIndex: '1',
-      submitTime: new Date().getTime()
-    },
-    {
-      id: 5,
-      answer: '无',
-      answerIndex: '1',
-      submitTime: new Date().getTime()
-    },
-    {
-      id: 6,
-      answer: {
-        type: '个人收入',
-        scope: '0-1,000'
-      },
-      answerIndex: '1',
-      submitTime: new Date().getTime()
-    },
-    {
-      id: 7,
-      answer: '< 1 ',
-      answerIndex: 1,
-      submitTime: new Date().getTime()
-    },
-    {
-      id: 8,
-      answer: {
-        num: 5,
-        type: '家庭',
-        typeIndex: '1'
-      },
-      submitTime: new Date().getTime()
-    },
-    {
-      id: 9,
-      answer: [
-        {
-          age: '20-30',
-          sex: '女',
-          relation: '配偶',
-          relationIndex: '1'
-        },
-        {
-          age: '20-30',
-          sex: '女',
-          relation: '小三',
-          relationIndex: '1'
-        },
-        {
-          age: '20-30',
-          sex: '男',
-          relation: '基友',
-          relationIndex: '1'
-        }
-      ],
-      submitTime: new Date().getTime()
-    },
-    {
-      id: 10,
-      answer: {
-        hz: '几乎每天',
-        hzIndex: '1',
-        scope: '社区以外',
-        scopeIndex: '1'
-      },
-      submitTime: new Date().getTime()
-    },
-    {
-      id: 11,
-      answer: {
-        hz: '几乎每天',
-        hzIndex: '1',
-        scope: '社区以外',
-        scopeIndex: '1'
-      },
-      submitTime: new Date().getTime()
-    },
-    {
-      id: 12,
-      answer: {
-        grade: '10',
-        reson: '11111'
-      },
-      submitTime: new Date().getTime()
-    },
-    {
-      id: 13,
-      answer: '晴天 ',
-      answerIndex: 1,
-      submitTime: new Date().getTime()
-    },
-    {
-      id: 14,
-      answer: '工作日',
-      answerIndex: 1,
-      submitTime: new Date().getTime()
-    },
-    {
-      id: 15,
-      answer: '普通的一天',
-      answerIndex: 1,
-      submitTime: new Date().getTime()
-    }
-  ]
-  const logList = [
-    {
-      id: 1,
-      answer: '是',
-      answerIndex: '是',
-      submitTime: new Date().getTime()
-    },
-    {
-      id: 2,
-      answer: '50',
-      submitTime: new Date().getTime()
-    },
-    {
-      id: 3,
-      answer: '0-5岁;6-11 岁',
-      answerIndex: '2;3',
-      submitTime: new Date().getTime()
-    },
-    {
-      id: 4,
-      answer: [
-        {
-          age: '50',
-          sex: '男',
-          relation: '家人',
-          contactType: '身体接触',
-          contacttime: '<5',
-          contactLocation: '家庭',
-          contactHz: '每天几乎每天'
-        },
-        {
-          age: '50',
-          sex: '男',
-          relation: '家人',
-          contactType: '身体接触',
-          contacttime: '<5',
-          contactLocation: '家庭',
-          contactHz: '一月不足一次'
-        }
-      ],
-      answerIndex: '1',
-      submitTime: new Date().getTime()
-    },
-    {
-      id: 5,
-      answer: {
-        state: '是',
-        num: '20'
-      },
-      submitTime: new Date().getTime()
-    },
-    {
-      id: 6,
-      answer: '非常好',
-      answerIndex: '1',
-      submitTime: new Date().getTime()
-    },
-    {
-      id: 7,
-      answer: '是',
-      answerIndex: 1,
-      submitTime: new Date().getTime()
-    },
-    {
-      id: 8,
-      answer: [
-        {
-          type: '猫',
-          num: 1
-        },
-        {
-          type: '猫',
-          num: 1
-        },
-        {
-          type: '猫',
-          num: 1
-        },
-        {
-          type: '其他',
-          name: '其他名字',
-          num: 1
-        }
-      ],
-      submitTime: new Date().getTime()
-    },
-    {
-      id: 9,
-      answer: [
-        {
-          type: '猫',
-          hz: 1
-        },
-        {
-          type: '猫',
-          hz: 1
-        },
-        {
-          type: '猫',
-          hz: 1
-        },
-        {
-          type: '其他',
-          name: '其他名字',
-          hz: 1
-        }
-      ],
-      submitTime: new Date().getTime()
-    },
-    {
-      id: 10,
-      answer: '是',
-      scopeIndex: '1',
-      submitTime: new Date().getTime()
-    },
-    {
-      id: 11,
-      answer: [
-        {
-          type: '猫',
-          typeOther: '1',
-          num: '20',
-          contacttime: '<5',
-          contactLocation: '家庭',
-          other: '1'
-        },
-        {
-          age: '50',
-          sex: '男',
-          relation: '家人',
-          contactType: '身体接触',
-          contacttime: '<5',
-          contactLocation: '家庭',
-          contactHz: 'contact'
-        }
-      ],
-      answerIndex: '1',
-      submitTime: new Date().getTime()
-    },
-    {
-      id: 12,
-      answer: '非常好',
-      answerIndex: '1',
-      submitTime: new Date().getTime()
-    },
-    {
-      id: 13,
-      answer: '建议',
-      submitTime: new Date().getTime()
-    }
-  ]
   export default {
     name: 'userFormDetails',
     directives: {
@@ -484,8 +208,7 @@
       if (userInfoForm) {
         this.userInfoForm = userInfoForm
         this.userInfoFormId = userInfoForm.id
-        this.getBasicList(this.userInfoFormId)
-        this.getLogList(this.userInfoFormId)
+        this.getAnswer()
       } else {
         this.$router.push({
           path: '/userManagement/index'
@@ -499,46 +222,126 @@
       ])
     },
     methods: {
-      getBasicList(id) {
-        this.listLoading = true
-        setTimeout(() => {
-          for (const i in basicList) {
-            const node = basicList[i]
-            node.question = this.$t('basicInfoQuestions.q' + (Number(i) + 1))
-          }
-          this.basicList = basicList
+      getAnswer() {
+        this.$http.get('/getAnswer', { params: { id: this.userInfoFormId }}).then(response => {
           this.listLoading = false
-        }, 1500)
-      },
-      getLogList(id) {
-        this.listLoading = true
-        setTimeout(() => {
-          for (const i in logList) {
-            const node = logList[i]
-            node.question = this.$t('logQuestions.q' + (Number(i) + 1))
+          const data = response.data
+          if (data.status) {
+            const locanswer = data.data[0].locanswer
+            let answerlog = data.data[0].answerlog
+            if (locanswer) {
+              const locanswerArr = JSON.parse(locanswer)
+              for (const i in locanswerArr) {
+                const node = locanswerArr[i]
+                node.question = this.$t('basicInfoQuestions.q' + (node.id))
+              }
+              this.basicList = locanswerArr
+            }
+            if (answerlog) {
+              answerlog = JSON.parse(answerlog)
+              for (const i in answerlog) {
+                const node = answerlog[i]
+                node.question = this.$t('logQuestions.q' + (node.id))
+              }
+              this.logList = answerlog
+            }
           }
-          this.logList = logList
+        }, response => {
           this.listLoading = false
-        }, 1500)
+          console.log('失败：' + response)
+        })
       },
       handleDownload(sig) {
         require.ensure([], () => {
           const { export_json_to_excel } = require('vendor/Export2Excel')
-          const tHeader = ['题号', '题目', '答案', '提交时间']
-          const filterVal = ['id', 'question', 'answer', 'submitTime']
           if (sig === 1) {
-            const basicListArr = this.basicList
+            const tHeader = ['题号', '题目', '答案']
+            const filterVal = ['id', 'question', 'answer']
+            const basicListArr = this.basicList.concat()
             for (const i in basicListArr) {
-              const node = basicListArr[i]
-              node.submitTime = parseTime(node.submitTime)
+              const node = JSON.parse(JSON.stringify(basicListArr[i]))
+              const id = node.id
+              const answer = node.answer
+              let answerStr = ''
+              switch (id) {
+                case 6:
+                  answerStr = `${answer.type}:${answer.scope}`
+                  break
+                case 8:
+                  answerStr = `同住人数：${answer.num}；\r\n同住类型：${answer.num}`
+                  break
+                case 9:
+                  for (const i in answer) {
+                    const node = answer[i]
+                    answerStr += `年龄：${node.age}；性别：${node.sex}; 关系：${node.relation}\r\n`
+                  }
+                  break
+                case 10:
+                  for (const i in answer) {
+                    const node = answer[i]
+                    answerStr += `范围：${node.scope}；频率：${node.hz}\r\n`
+                  }
+                  break
+                case 11:
+                  for (const i in answer) {
+                    const node = answer[i]
+                    answerStr += `范围：${node.scope}；频率：${node.hz}\r\n`
+                  }
+                  break
+                case 13:
+                  answerStr = `分数：${answer.grade}；\r\n 理由：${answer.reson}`
+                  break
+                default:
+                  answerStr = answer
+                  break
+              }
+              node.answer = answerStr
             }
             const data = this.formatJson(filterVal, basicListArr)
             export_json_to_excel(tHeader, data, '基本信息填写问卷信息')
           } else {
-            const logListArr = this.logList
+            const tHeader = ['题号', '题目', '答案', '提交时间']
+            const filterVal = ['id', 'question', 'answer', 'submitTime']
+            const logListArr = this.logList.concat()
             for (const i in logListArr) {
-              const node = logListArr[i]
-              node.submitTime = parseTime(node.submitTime)
+              const node = JSON.parse(JSON.stringify(logListArr[i]))
+              const id = node.id
+              const answer = node.answer
+              let answerStr = ''
+              switch (id) {
+                case 4:
+                  for (const i in answer) {
+                    const node = answer[i]
+                    answerStr += `年龄：${node.age}；性别：${node.sex}；接触时间：${node.cTime}；关系：${node.relation}；接触类型：${node.contactType}；总时间：${node.contacttime}；接触地点：${node.contactLocation}；平时的接触频率:${node.contactHz}；提交时间:${node.submitTime}\r\n`
+                  }
+                  break
+                case 5:
+                  if (answer.state === '是') {
+                    answerStr = node.num
+                  } else {
+                    answerStr = `估计遗漏数量：${node.num}`
+                  }
+                  break
+                case 8:
+                  answerStr = `种类：${node.type}；数量：${node.num}`
+                  break
+                case 9:
+                  for (const i in answer) {
+                    const node = answer[i]
+                    answerStr += `种类：${node.type}；频率：${node.hz}\r\n`
+                  }
+                  break
+                case 11:
+                  for (const i in answer) {
+                    const node = answer[i]
+                    answerStr += `动物种类：${node.type}；数量：${node.num}；接触时间：${node.contacttime}；接触地点：${node.contactLocation}；\r\n`
+                  }
+                  break
+                default:
+                  answerStr = answer
+                  break
+              }
+              node.answer = answerStr
             }
             const data = this.formatJson(filterVal, logListArr)
             export_json_to_excel(tHeader, data, '接触日志填写问卷信息')
@@ -547,7 +350,7 @@
       },
       formatJson(filterVal, jsonData) {
         return jsonData.map(v => filterVal.map(j => {
-          if (j === 'timestamp') {
+          if (j === 'submitTime') {
             return parseTime(v[j])
           } else {
             return v[j]

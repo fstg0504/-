@@ -2,15 +2,14 @@
   <div class="login-container">
     <el-form class="card-box login-form" autoComplete="on" :model="loginForm" :rules="loginRules" ref="loginForm" label-position="left">
       <h3 class="title">系统登录</h3>
-
       <el-form-item prop="username">
         <span class="svg-container svg-container_login"><icon-svg icon-class="user" /></span>
-        <el-input name="username" type="text" v-model="loginForm.ad_name" autoComplete="on" placeholder="邮箱" />
+        <el-input name="username" type="text" v-model="loginForm.ad_name" prop="ad_name" autoComplete="on" placeholder="用户名" />
       </el-form-item>
 
       <el-form-item prop="password">
         <span class="svg-container"><icon-svg icon-class="password" /></span>
-        <el-input name="password" :type="pwdType" @keyup.enter.native="handleLogin" v-model="loginForm.ad_pwd" autoComplete="on"
+        <el-input name="password" :type="pwdType" @keyup.enter.native="handleLogin" v-model="loginForm.ad_pwd" prop="ad_pwd" autoComplete="on"
           placeholder="密码" />
         <span class='show-pwd' @click='showPwd'><icon-svg icon-class="eye" /></span>
       </el-form-item>
@@ -47,7 +46,14 @@
           ad_pwd: ''
         },
         loginRules: {
-          ad_name: [{ required: true, trigger: 'blur' }],
+          ad_name: [
+            { required: true, message: '请输入用户名', trigger: 'blur' },
+            { min: 1, max: 20, message: '长度在 6 到 20 个字符', trigger: 'blur' }
+          ],
+//          ad_pwd: [
+//            { required: true, message: '请输入密码', trigger: 'blur' },
+//            { min: 6, max: 20, message: '长度在 6 到 20 个字符', trigger: 'blur' }
+//          ],
           ad_pwd: [{ required: true, trigger: 'blur', validator: validatePassword }]
         },
         pwdType: 'password',
@@ -66,10 +72,16 @@
         this.$refs.loginForm.validate(valid => {
           if (valid) {
             this.loading = true
-            this.$store.dispatch('LoginByUsername', this.loginForm).then(() => {
-              this.loading = false
-              this.$router.push({ path: '/' })
-            }).catch(() => {
+            this.$store.dispatch('LoginByUsername', this.loginForm).then((response) => {
+              console.log(response)
+              const data = response.data
+              if (data.status) {
+                this.loading = false
+                this.$router.push({ path: '/' })
+              } else {
+                this.$message.error(data.msg)
+              }
+            }).catch((response) => {
               this.loading = false
             })
           } else {

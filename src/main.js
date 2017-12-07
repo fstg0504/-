@@ -20,9 +20,7 @@ Vue.use(ElementUI)
 Vue.prototype.$http = axios
 Vue.prototype.HOST = '/api'
 // 由于后台没有配置api前缀 所以这里用axios.defaults.baseURL
-// axios.defaults.baseURL = 'http://192.168.13.13:8888'
-axios.defaults.baseURL = 'http://localhost:8888'
-
+axios.defaults.baseURL = process.env.BASE_API
 const lang = 'zh'
 Cookies.set('lang', lang)
 const messages = {

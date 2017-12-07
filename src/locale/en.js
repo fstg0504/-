@@ -52,8 +52,8 @@ export default {
     q10: 'Where and how often do you usually have a travel?',
     q11: 'Where and how often do you usually have a travel?',
     q12: 'Where and how often do you usually have a travel?',
-    q13: 'Today’s weather?',
-    q14: 'Is today a regular day or holiday for you?',
+    q13: 'Is today a regular day or holiday for you?',
+    q14: 'Today’s weather?',
     q15: 'Is today a regular day (have a common life pattern at least four days of a week) or irregular for you?'
   },
   basicInfoAnswer: {
