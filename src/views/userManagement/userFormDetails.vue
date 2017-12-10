@@ -3,8 +3,8 @@
     <div class="userInfo-container">
       <span>用户ID： {{userInfoFormId}}</span>
     </div>
-    <el-tabs type="border-card">
-      <el-tab-pane :label="$t('userFormDetails.basicInfoContent')">
+    <el-tabs v-model="activeName" @click="handleTabClick" type="border-card">
+      <el-tab-pane name="first" :label="$t('userFormDetails.basicInfoContent')">
         <!--基本信息填写内容-->
         <div class="filter-container">
           <el-button v-if="ad_level.indexOf('1')>-1" class="filter-item" type="primary" icon="document" @click="handleDownload(1)">导出</el-button>
@@ -63,7 +63,7 @@
           </el-table>
         </div>
       </el-tab-pane>
-      <el-tab-pane :label="$t('userFormDetails.logInfoContent')">
+      <el-tab-pane name="second" :label="$t('userFormDetails.logInfoContent')">
         <!--接触日志填写内容-->
         <div class="filter-container">
           <el-button v-if="ad_level.indexOf('1')>-1" class="filter-item" type="primary" icon="document" @click="handleDownload(2)">导出</el-button>
@@ -133,8 +133,50 @@
           </el-table>
         </div>
       </el-tab-pane>
+      <el-tab-pane name="third" label="定位数据记录">
+        <!--定位数据记录-->
+        <div class="filter-container">
+          <el-button v-if="ad_level.indexOf('1')>-1" class="filter-item" type="primary" icon="document" @click="handleDownload(3)">导出</el-button>
+        </div>
+        <div class="el-table-container">
+          <el-table :key='tableKey3' :data="localLogList" v-loading="listLoading" :element-loading-text="$t('utils.loadText')" border fit highlight-current-row style="width: 100%">
+            <el-table-column type="index" width="65">序号</el-table-column>
+            <el-table-column align="center" label="日期">
+              <template scope="scope">
+                <span v-if="scope.row.nowtime">{{scope.row.nowtime | fomentDateYMD}}</span>
+                <span v-else>无</span>
+              </template>
+            </el-table-column>
+            <el-table-column align="center" label="时间">
+              <template scope="scope">
+                <span v-if="scope.row.nowtime">{{scope.row.nowtime | fomentDateHIS}}</span>
+                <span v-else>无</span>
+              </template>
+            </el-table-column>
+            <el-table-column align="center" label="经度">
+              <template scope="scope">
+                <span>{{scope.row.locationlog.lon}}</span>
+              </template>
+            </el-table-column>
+            <el-table-column align="center" label="维度">
+              <template scope="scope">
+                <span>{{scope.row.locationlog.lat}}</span>
+              </template>
+            </el-table-column>
+          </el-table>
+          <div v-show="!listLoading" class="pagination-container">
+            <el-pagination
+              @size-change="handleSizeChange"
+              @current-change="handleCurrentChange"
+              current-page.sync="1"
+              :page-size="listQuery.length"
+              layout="total, prev, pager, next"
+              :total="total">
+            </el-pagination>
+          </div>
+        </div>
+      </el-tab-pane>
     </el-tabs>
-
   </div>
 </template>
 
@@ -152,63 +194,64 @@
       return {
         basicList: [],
         logList: [],
+        localLogList: [],
         userInfoFormId: '',
         userInfoForm: {},
         total: null,
         listLoading: true,
+        activeName: 'first',
         listQuery: {
-          page: 1,
-          limit: 20,
-          importance: undefined,
-          title: undefined,
-          type: undefined,
-          sort: '+id'
+          phoneid: undefined,
+          start: 0,
+          length: 10,
         },
-        temp: {
-          id: undefined,
-          importance: 0,
-          remark: '',
-          timestamp: 0,
-          title: '',
-          type: '',
-          status: 'published'
-        },
-        importanceOptions: [1, 2, 3],
-        calendarTypeOptions: [
-          { key: '0', display_name: 'userManagement.assignCrowdNot' },
-          { key: '1', display_name: 'userManagement.assignCrowd' }
-        ],
-        sortOptions: [{ label: '按ID升序列', key: '+id' }, { label: '按ID降序', key: '-id' }],
-        statusOptions: ['published', 'draft', 'deleted'],
-        dialogFormVisible: false,
-        dialogStatus: '',
-        textMap: {
-          update: '编辑',
-          create: '创建'
-        },
-        dialogPvVisible: false,
-        pvData: [],
-        showAuditor: false,
         tableKey1: 1,
-        tableKey2: 2
+        tableKey2: 2,
+        tableKey3: 3
       }
     },
     filters: {
-      statusFilter(status) {
-        const statusMap = {
-          published: 'success',
-          draft: 'gray',
-          deleted: 'danger'
+      fomentDateYMD(value) {
+        if (value) {
+          const date = new Date(value)
+          const formatObj = {
+            y: date.getFullYear(),
+            m: date.getMonth() + 1,
+            d: date.getDate().toString().length > 1 ? date.getDate() : `0${date.getDate()}`,
+            h: date.getHours().toString().length > 1 ? date.getHours() : `0${date.getHours()}`,
+            i: date.getMinutes().toString().length > 1 ? date.getMinutes() : `0${date.getMinutes()}`,
+            s: date.getSeconds().toString().length > 1 ? date.getSeconds() : `0${date.getSeconds()}`,
+          }
+          return `${formatObj.y}${formatObj.m}${formatObj.d}`
+        } else {
+          return `无`
         }
-        return statusMap[status]
+      },
+      fomentDateHIS(value) {
+        if (value) {
+          const date = new Date(value)
+          const formatObj = {
+            y: date.getFullYear(),
+            m: date.getMonth() + 1,
+            d: date.getDate().toString().length > 1 ? date.getDate() : `0${date.getDate()}`,
+            h: date.getHours().toString().length > 1 ? date.getHours() : `0${date.getHours()}`,
+            i: date.getMinutes().toString().length > 1 ? date.getMinutes() : `0${date.getMinutes()}`,
+            s: date.getSeconds().toString().length > 1 ? date.getSeconds() : `0${date.getSeconds()}`,
+          }
+          return `${formatObj.h}${formatObj.i}${formatObj.s}`
+        } else {
+          return `无`
+        }
       }
     },
     created() {
-      const userInfoForm = JSON.parse(sessionStorage.getItem('userInfoForm'))
-      if (userInfoForm) {
+      if (sessionStorage.getItem('userInfoForm')) {
+        const userInfoForm = JSON.parse(sessionStorage.getItem('userInfoForm'))
         this.userInfoForm = userInfoForm
         this.userInfoFormId = userInfoForm.id
+        this.listQuery.phoneid = userInfoForm.equipmentinfo
         this.getAnswer()
+        this.getLocation()
       } else {
         this.$router.push({
           path: '/userManagement/index'
@@ -222,13 +265,16 @@
       ])
     },
     methods: {
+      handleTabClick(tab, event) {
+        console.log(tab, event)
+      },
       getAnswer() {
         this.$http.get('/getAnswer', { params: { id: this.userInfoFormId }}).then(response => {
           this.listLoading = false
           const data = response.data
           if (data.status) {
             const locanswer = data.data[0].locanswer
-            let answerlog = data.data[0].answerlog
+            const answerlog = data.data[0].answerlog
             if (locanswer) {
               const locanswerArr = JSON.parse(locanswer)
               for (const i in locanswerArr) {
@@ -236,115 +282,198 @@
                 node.question = this.$t('basicInfoQuestions.q' + (node.id))
               }
               this.basicList = locanswerArr
+            } else {
+              this.basicList = []
             }
             if (answerlog) {
-              answerlog = JSON.parse(answerlog)
-              for (const i in answerlog) {
-                const node = answerlog[i]
+              const answerlogArr = JSON.parse(answerlog)
+              for (const i in answerlogArr) {
+                const node = answerlogArr[i]
                 node.question = this.$t('logQuestions.q' + (node.id))
               }
-              this.logList = answerlog
+              this.logList = answerlogArr
+            } else {
+              this.logList = []
             }
           }
         }, response => {
           this.listLoading = false
-          console.log('失败：' + response)
+          this.$message.error(`错误信息：${response}`)
         })
+      },
+      getLocation() {
+        this.$http.get('/getLocalLog', { params: this.listQuery }).then(response => {
+          this.listLoading = false
+          const data = response.data
+          if (data.data.length > 0) {
+            this.localLogList = data.data.map((value, index, array) => {
+              value.locationlog = JSON.parse(value.locationlog)
+              return value
+            })
+          }
+          this.total = data.data1[0].num
+        }, response => {
+          this.listLoading = false
+          this.$message.error(`错误信息：${response}`)
+        })
+      },
+      handleSizeChange(val) {
+        this.listQuery.start = 0
+        this.getLocation()
+      },
+      handleCurrentChange(val) {
+        this.listQuery.start = 0
+        this.listQuery.start = this.listQuery.length * (val - 1)
+        this.getLocation()
       },
       handleDownload(sig) {
         require.ensure([], () => {
           const { export_json_to_excel } = require('vendor/Export2Excel')
-          if (sig === 1) {
-            const tHeader = ['题号', '题目', '答案']
-            const filterVal = ['id', 'question', 'answer']
-            const basicListArr = this.basicList.concat()
-            for (const i in basicListArr) {
-              const node = JSON.parse(JSON.stringify(basicListArr[i]))
-              const id = node.id
-              const answer = node.answer
-              let answerStr = ''
-              switch (id) {
-                case 6:
-                  answerStr = `${answer.type}:${answer.scope}`
-                  break
-                case 8:
-                  answerStr = `同住人数：${answer.num}；\r\n同住类型：${answer.num}`
-                  break
-                case 9:
-                  for (const i in answer) {
-                    const node = answer[i]
-                    answerStr += `年龄：${node.age}；性别：${node.sex}; 关系：${node.relation}\r\n`
+          switch (sig) {
+            case 1: {
+              const tHeader = ['题号', '题目', '答案']
+              const filterVal = ['id', 'question', 'answer']
+              const basicListArr = this.basicList.concat()
+              const resultArr = []
+              for (const i in basicListArr) {
+                const node = JSON.parse(JSON.stringify(basicListArr[i]))
+                const id = node.id
+                let answer = node.answer
+                if (typeof (answer) === 'object') {
+                  answer = JSON.parse(JSON.stringify(node.answer))
+                }
+                let answerStr = ''
+                if (answer) {
+                  switch (id) {
+                    case 6: {
+                      answerStr = `${answer.type}:${answer.scope}`
+                      break
+                    }
+                    case 8: {
+                      answerStr = `同住人数：${answer.num}；\r\n同住类型：${answer.type}`
+                      break
+                    }
+                    case 9: {
+                      for (const i in answer) {
+                        const node = answer[i]
+                        answerStr += `年龄：${node.age}；性别：${node.sex}; 关系：${node.relation}\r\n`
+                      }
+                      break
+                    }
+                    case 10: {
+                      for (const i in answer) {
+                        const node = answer[i]
+                        answerStr += `范围：${node.scope}；频率：${node.hz}\r\n`
+                      }
+                      break
+                    }
+                    case 11: {
+                      for (const i in answer) {
+                        const node = answer[i]
+                        answerStr += `范围：${node.scope}；频率：${node.hz}\r\n`
+                      }
+                      break
+                    }
+                    case 13: {
+                      answerStr = `分数：${answer.grade}；\r\n 理由：${answer.reson}`
+                      break
+                    }
+                    default:
+                      answerStr = answer
                   }
-                  break
-                case 10:
-                  for (const i in answer) {
-                    const node = answer[i]
-                    answerStr += `范围：${node.scope}；频率：${node.hz}\r\n`
-                  }
-                  break
-                case 11:
-                  for (const i in answer) {
-                    const node = answer[i]
-                    answerStr += `范围：${node.scope}；频率：${node.hz}\r\n`
-                  }
-                  break
-                case 13:
-                  answerStr = `分数：${answer.grade}；\r\n 理由：${answer.reson}`
-                  break
-                default:
-                  answerStr = answer
-                  break
+                } else {
+                  answerStr = `未填写`
+                }
+                resultArr.push({
+                  id: node.id,
+                  question: node.question,
+                  answer: answerStr,
+                })
               }
-              node.answer = answerStr
+              const data = this.formatJson(filterVal, resultArr)
+              export_json_to_excel(tHeader, data, '基本信息填写问卷信息')
+              break
             }
-            const data = this.formatJson(filterVal, basicListArr)
-            export_json_to_excel(tHeader, data, '基本信息填写问卷信息')
-          } else {
-            const tHeader = ['题号', '题目', '答案', '提交时间']
-            const filterVal = ['id', 'question', 'answer', 'submitTime']
-            const logListArr = this.logList.concat()
-            for (const i in logListArr) {
-              const node = JSON.parse(JSON.stringify(logListArr[i]))
-              const id = node.id
-              const answer = node.answer
-              let answerStr = ''
-              switch (id) {
-                case 4:
-                  for (const i in answer) {
-                    const node = answer[i]
-                    answerStr += `年龄：${node.age}；性别：${node.sex}；接触时间：${node.cTime}；关系：${node.relation}；接触类型：${node.contactType}；总时间：${node.contacttime}；接触地点：${node.contactLocation}；平时的接触频率:${node.contactHz}；提交时间:${node.submitTime}\r\n`
+            case 2: {
+              const tHeader2 = ['题号', '题目', '答案', '提交时间']
+              const filterVal2 = ['id', 'question', 'answer', 'submitTime']
+              const logListArr = this.logList.concat()
+              const resultArr = []
+              for (const i in logListArr) {
+                const node = JSON.parse(JSON.stringify(logListArr[i]))
+                const id = node.id
+                const answer = node.answer
+                let answerStr = ''
+                if (answer) {
+                  switch (id) {
+                    case 4:
+                      for (const i in answer) {
+                        const node = answer[i]
+                        answerStr += `年龄：${node.age}；性别：${node.sex}；接触时间：${node.cTime}；关系：${node.relation}；接触类型：${node.contactType}；总时间：${node.contacttime}；接触地点：${node.contactLocation}；平时的接触频率:${node.contactHz}；提交时间:${node.submitTime}\r\n`
+                      }
+                      break
+                    case 5:
+                      if (answer.state === '是') {
+                        answerStr = node.num
+                      } else {
+                        answerStr = `估计遗漏数量：${node.num}`
+                      }
+                      break
+                    case 8:
+                      answerStr = `种类：${node.type}；数量：${node.num}`
+                      break
+                    case 9:
+                      for (const i in answer) {
+                        const node = answer[i]
+                        answerStr += `种类：${node.type}；频率：${node.hz}\r\n`
+                      }
+                      break
+                    case 11:
+                      for (const i in answer) {
+                        const node = answer[i]
+                        answerStr += `动物种类：${node.type}；数量：${node.num}；接触时间：${node.contacttime}；接触地点：${node.contactLocation}；\r\n`
+                      }
+                      break
+                    default:
+                      answerStr = answer
                   }
-                  break
-                case 5:
-                  if (answer.state === '是') {
-                    answerStr = node.num
-                  } else {
-                    answerStr = `估计遗漏数量：${node.num}`
-                  }
-                  break
-                case 8:
-                  answerStr = `种类：${node.type}；数量：${node.num}`
-                  break
-                case 9:
-                  for (const i in answer) {
-                    const node = answer[i]
-                    answerStr += `种类：${node.type}；频率：${node.hz}\r\n`
-                  }
-                  break
-                case 11:
-                  for (const i in answer) {
-                    const node = answer[i]
-                    answerStr += `动物种类：${node.type}；数量：${node.num}；接触时间：${node.contacttime}；接触地点：${node.contactLocation}；\r\n`
-                  }
-                  break
-                default:
-                  answerStr = answer
-                  break
+                } else {
+                  answerStr = `未填写`
+                }
+                resultArr.push({
+                  id: node.id,
+                  question: node.question,
+                  answer: answerStr,
+                  submitTime: node.submitTime,
+                })
               }
-              node.answer = answerStr
+              const data2 = this.formatJson(filterVal2, resultArr)
+              export_json_to_excel(tHeader2, data2, '接触日志填写问卷信息')
+              break
             }
-            const data = this.formatJson(filterVal, logListArr)
-            export_json_to_excel(tHeader, data, '接触日志填写问卷信息')
+            case 3: {
+              const tHeader3 = ['序号', '日期', '时间', '纬度', '经度']
+              const filterVal3 = ['index', 'date1', 'date2', 'lon', 'lat']
+              const localLogListArr = this.localLogList.concat()
+              const resultArr = []
+              for (const i in localLogListArr) {
+                const node = JSON.parse(JSON.stringify(localLogListArr[i]))
+                resultArr.push({
+                  index: Number(i) + 1,
+                  date1: node.nowtime ? this.fomentDateYMD(node.nowtime) : `无`,
+                  date2: node.nowtime ? this.fomentDateHIS(node.nowtime) : `无`,
+                  lon: node.locationlog.lon,
+                  lat: node.locationlog.lat
+                })
+              }
+              const data3 = this.formatJson(filterVal3, resultArr)
+              console.log(data3)
+              export_json_to_excel(tHeader3, data3, '定位数据记录信息')
+              break
+            }
+            default: {
+              this.$message.error(`错误信息：生成表格失败，错误的参数`)
+            }
           }
         })
       },
@@ -356,6 +485,38 @@
             return v[j]
           }
         }))
+      },
+      fomentDateYMD(value) {
+        if (value) {
+          const date = new Date(value)
+          const formatObj = {
+            y: date.getFullYear(),
+            m: date.getMonth() + 1,
+            d: date.getDate().toString().length > 1 ? date.getDate() : `0${date.getDate()}`,
+            h: date.getHours().toString().length > 1 ? date.getHours() : `0${date.getHours()}`,
+            i: date.getMinutes().toString().length > 1 ? date.getMinutes() : `0${date.getMinutes()}`,
+            s: date.getSeconds().toString().length > 1 ? date.getSeconds() : `0${date.getSeconds()}`,
+          }
+          return `${formatObj.y}${formatObj.m}${formatObj.d}`
+        } else {
+          return `无`
+        }
+      },
+      fomentDateHIS(value) {
+        if (value) {
+          const date = new Date(value)
+          const formatObj = {
+            y: date.getFullYear(),
+            m: date.getMonth() + 1,
+            d: date.getDate().toString().length > 1 ? date.getDate() : `0${date.getDate()}`,
+            h: date.getHours().toString().length > 1 ? date.getHours() : `0${date.getHours()}`,
+            i: date.getMinutes().toString().length > 1 ? date.getMinutes() : `0${date.getMinutes()}`,
+            s: date.getSeconds().toString().length > 1 ? date.getSeconds() : `0${date.getSeconds()}`,
+          }
+          return `${formatObj.h}${formatObj.i}${formatObj.s}`
+        } else {
+          return `无`
+        }
       }
     }
   }

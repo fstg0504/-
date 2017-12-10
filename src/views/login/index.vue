@@ -20,19 +20,9 @@
 </template>
 
 <script>
-// import { isvalidUsername } from '@/utils/validate'
-//  import Cookies from 'js-cookie'
-
   export default {
     name: 'login',
     data() {
-  //    const validateUsername = (rule, value, callback) => {
-  //      if (!isvalidUsername(value)) {
-  //        callback(new Error('请输入正确的用户名'))
-  //      } else {
-  //        callback()
-  //      }
-  //    }
       const validatePassword = (rule, value, callback) => {
         if (value.length < 6) {
           callback(new Error('密码不能小于6位'))
@@ -73,10 +63,9 @@
           if (valid) {
             this.loading = true
             this.$store.dispatch('LoginByUsername', this.loginForm).then((response) => {
-              console.log(response)
+              this.loading = false
               const data = response.data
               if (data.status) {
-                this.loading = false
                 this.$router.push({ path: '/' })
               } else {
                 this.$message.error(data.msg)
@@ -92,10 +81,8 @@
       }
     },
     created() {
-          // window.addEventListener('hashchange', this.afterQRScan)
     },
     destroyed() {
-          // window.removeEventListener('hashchange', this.afterQRScan)
     }
   }
 </script>

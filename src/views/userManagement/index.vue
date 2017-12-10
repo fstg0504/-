@@ -77,10 +77,16 @@
           <span v-else>暂无</span>
         </template>
       </el-table-column>
+      <el-table-column align="center" label="接触日志开始时间" >
+        <template scope="scope">
+          <span v-if="scope.row.touchlog">{{new Date(scope.row.touchlog).getTime() | parseTime('{y}-{m}-{d} {h}:{i}')}}</span>
+          <span v-else>无</span>
+        </template>
+      </el-table-column>
       <el-table-column align="center" label="接触日志提交时间" >
         <template scope="scope">
           <span v-if="scope.row.sublogtime">{{new Date(scope.row.sublogtime).getTime() | parseTime('{y}-{m}-{d} {h}:{i}')}}</span>
-          <span v-else>占无</span>
+          <span v-else>无</span>
         </template>
       </el-table-column>
       <el-table-column align="center" :label="$t('userManagement.participantId')" width="120">
@@ -118,7 +124,7 @@
   import { parseTime } from '@/utils'
 
   const calendarTypeOptions = [
-    { key: '0', display_name: '非指定人群' },
+    { key: '2', display_name: '非指定人群' },
     { key: '1', display_name: '指定人群' }
   ]
 
@@ -136,7 +142,6 @@
     data() {
       return {
         list: [],
-//        filterDate1: [new Date(2017, 9, 1, 0, 0), new Date()],
         filterDate1: ['', ''],
         filterDate2: ['', ''],
         filterDate3: ['', ''],
@@ -242,15 +247,30 @@
       handleDownload() {
         require.ensure([], () => {
           const { export_json_to_excel } = require('vendor/Export2Excel')
-          const tHeader = ['用户ID', '是否指定人群', '基本信息填写时间', '提交接触日志时间', '参与者ID', '定位开始时间', '定位结束时间']
-          const filterVal = ['id', 'assign', 'basicInfoTime', 'logTime', 'participantId', 'locationStart', 'locationEnd']
-          const data = this.formatJson(filterVal, this.list)
+          const tHeader = ['序号', '用户ID', '是否指定人群', '基本信息填写时间', '提交接触日志时间', '参与者ID', '定位开始时间', '定位结束时间']
+          const filterVal = ['index', 'id', 'crowd', 'registertime', 'touchlog', 'actorid', 'locationstarttime', 'locationendtime']
+          const listArr = this.list.concat()
+          const resultArr = []
+          for (const i in listArr) {
+            const node = JSON.parse(JSON.stringify(listArr[i]))
+            resultArr.push({
+              index: Number(i) + 1,
+              id: node.id,
+              crowd: Number(node.crowd) === 1 ? '是' : '否',
+              registertime: node.registertime,
+              touchlog: node.touchlog,
+              actorid: node.actorid,
+              locationstarttime: node.locationstarttime,
+              locationendtime: node.locationendtime,
+            })
+          }
+          const data = this.formatJson(filterVal, resultArr)
           export_json_to_excel(tHeader, data, '用户列表')
         })
       },
       formatJson(filterVal, jsonData) {
         return jsonData.map(v => filterVal.map(j => {
-          if (j === 'basicInfoTime' || j === 'logTime' || j === 'locationStart' || j === 'locationEnd') {
+          if (j === 'registertime' || j === 'touchlog' || j === 'locationstarttime' || j === 'locationendtime') {
             return parseTime(v[j])
           } else {
             return v[j]
