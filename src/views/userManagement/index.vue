@@ -204,14 +204,14 @@
     methods: {
       getList() {
         this.listLoading = true
-        this.listQuery.basicInfoTimeStart = parseTime(this.filterDate1[0]).toString()
-        this.listQuery.basicInfoTimeEnd = parseTime(this.filterDate1[1]).toString()
-        this.listQuery.logTimeStart = parseTime(this.filterDate2[0]).toString()
-        this.listQuery.logTimeEnd = parseTime(this.filterDate2[1]).toString()
-        this.listQuery.locationTime1Start = parseTime(this.filterDate3[0]).toString()
-        this.listQuery.locationTime1End = parseTime(this.filterDate3[1]).toString()
-        this.listQuery.locationTime2Start = parseTime(this.filterDate4[0]).toString()
-        this.listQuery.locationTime2End = parseTime(this.filterDate4[1]).toString()
+        this.listQuery.basicInfoTimeStart = this.filterDate1[0] ? parseTime(this.filterDate1[0]).toString() : '0-0-0 0:0:0'
+        this.listQuery.basicInfoTimeEnd = this.filterDate1[1] ? parseTime(this.filterDate1[1]).toString() : '0-0-0 0:0:0'
+        this.listQuery.logTimeStart = this.filterDate2[0] ? parseTime(this.filterDate2[0]).toString() : '0-0-0 0:0:0'
+        this.listQuery.logTimeEnd = this.filterDate2[1] ? parseTime(this.filterDate2[1]).toString() : '0-0-0 0:0:0'
+        this.listQuery.locationTime1Start = this.filterDate3[0] ? parseTime(this.filterDate3[0]).toString() : '0-0-0 0:0:0'
+        this.listQuery.locationTime1End = this.filterDate3[1] ? parseTime(this.filterDate3[1]).toString() : '0-0-0 0:0:0'
+        this.listQuery.locationTime2Start = this.filterDate4[0] ? parseTime(this.filterDate4[0]).toString() : '0-0-0 0:0:0'
+        this.listQuery.locationTime2End = this.filterDate4[1] ? parseTime(this.filterDate4[1]).toString() : '0-0-0 0:0:0'
         this.$http.get('/getUserInfo', { params: this.listQuery }).then(response => {
           this.listLoading = false
           const data = response.data

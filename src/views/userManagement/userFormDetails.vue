@@ -281,7 +281,9 @@
                 const node = locanswerArr[i]
                 node.question = this.$t('basicInfoQuestions.q' + (node.id))
               }
-              this.basicList = locanswerArr
+              this.basicList = locanswerArr.sort((a, b) => {
+                return a.id - b.id
+              })
             } else {
               this.basicList = []
             }
@@ -291,7 +293,9 @@
                 const node = answerlogArr[i]
                 node.question = this.$t('logQuestions.q' + (node.id))
               }
-              this.logList = answerlogArr
+              this.logList = answerlogArr.sort((a, b) => {
+                return a.id - b.id
+              })
             } else {
               this.logList = []
             }
