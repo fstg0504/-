@@ -50,7 +50,7 @@ export default {
     q8: 'How many people do you generally live with (sleep in the place more than 4 nights per week)?',
     q9: 'What are the age, sex and relationship to you for people who you reported in Question 8? Please list the 10 most intimate people if there is not enough space.',
     q10: 'Where and how often do you usually have a travel?',
-    q11: 'Where and how often do you usually have a travel?',
+    q11: 'Where and how often do you and your housemate usually have a travel together (at least two persons)?',
     q12: 'Where and how often do you usually have a travel?',
     q13: 'Is today a regular day or holiday for you?',
     q14: 'Today’s weather?',

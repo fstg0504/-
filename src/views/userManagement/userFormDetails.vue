@@ -29,7 +29,7 @@
                 </template>
                 <template v-if="scope.row.id==6">
                   <span>{{scope.row.answer.type}}:</span>
-                  <span>{{scope.row.answer.scope}}</span>
+                  <span v-html="scope.row.answer.scope"></span>
                 </template>
                 <template v-if="scope.row.id==8">
                   <span>同住人数：{{scope.row.answer.num}}；</span>
@@ -93,7 +93,7 @@
                     <span>接触时间：{{item.cTime}}；</span>
                     <span :index="item.relationIndex">关系：{{item.relation}}；</span>
                     <span>接触类型：{{item.contactType}}；</span>
-                    <span>总时间：{{item.contacttime}}；</span>
+                    <span v-html="'总时间：'+item.contacttime+'；'"></span>
                     <span>接触地点：{{item.contactLocation}}；</span>
                     <span>平时的接触频率：{{item.contactHz}}；</span>
                     <span>提交时间：{{item.submitTime | parseTime('{y}-{m}-{d} {h}:{i}')}}；</span>
