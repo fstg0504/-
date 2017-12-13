@@ -1,14 +1,9 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-import VueI18n from 'vue-i18n'
-import Cookies from 'js-cookie'
-import zh from '@/locale/zh'
-import en from '@/locale/en'
 const _import = require('./_import_' + process.env.NODE_ENV)
 // in development env not use Lazy Loading,because Lazy Loading too many pages will cause webpack hot update too slow.so only in production use Lazy Loading
 
 Vue.use(Router)
-Vue.use(VueI18n)
 
 /* layout */
 import Layout from '../views/layout/Layout'
@@ -20,16 +15,6 @@ import Layout from '../views/layout/Layout'
 * noDropdown : if `noDropdown:true` will has no submenu
 * meta : { role: ['admin'] }  will control the page role
 **/
-const setLang = (str) => {
-  const str0 = str.split('.')[0]
-  const str1 = str.split('.')[1]
-  const $lang = Cookies.get('lang') || 'zh'
-  if ($lang === 'zh') {
-    return zh[str0][str1]
-  } else {
-    return en[str0][str1]
-  }
-}
 
 export const constantRouterMap = [
     { path: '/login', component: _import('login/index'), hidden: true },
@@ -40,19 +25,19 @@ export const constantRouterMap = [
     path: '/',
     component: Layout,
     redirect: '/userManagement/index',
-    name: setLang('userManagement.userManagement'),
+    name: '用户管理',
     hidden: true,
-    children: [{ path: 'userManagement/index', component: _import('userManagement/index'), name: setLang('userManagement.userManagement') }]
+    children: [{ path: 'userManagement/index', component: _import('userManagement/index'), name: '用户管理' }]
   },
   {
     path: '/auth',
     component: Layout,
     redirect: 'auth',
-    name: setLang('auth.auth'),
+    name: '管理员权限',
     icon: 'lock',
     children: [
-      { path: 'index', component: _import('auth/index'), name: setLang('auth.personalCenter'), hidden: true },
-      { path: 'accountList', component: _import('auth/accountList'), name: setLang('auth.accountList') }
+      { path: 'index', component: _import('auth/index'), name: '角色管理', hidden: true },
+      { path: 'accountList', component: _import('auth/accountList'), name: '账号列表' }
 
     ]
   },
@@ -60,24 +45,24 @@ export const constantRouterMap = [
     path: '/content',
     component: Layout,
     redirect: 'content',
-    name: setLang('content.content'),
+    name: '内容管理',
     icon: 'excel',
     children: [
-      { path: 'investigation', component: _import('content/investigation'), name: setLang('content.investigation') },
-      { path: 'informedConsent', component: _import('content/informedConsent'), name: setLang('content.informedconsent') },
-      { path: 'operationProcess', component: _import('content/operationProcess'), name: setLang('content.operationprocess') }
+      { path: 'investigation', component: _import('content/investigation'), name: '研究介绍' },
+      { path: 'informedConsent', component: _import('content/informedConsent'), name: '知情同意书' },
+      { path: 'operationProcess', component: _import('content/operationProcess'), name: '操作流程' }
     ]
   },
   {
     path: '/userManagement',
     component: Layout,
     redirect: '/userManagement/index',
-    name: setLang('userManagement.userManagement'),
+    name: '用户管理',
     icon: 'people',
     noDropdown: true,
     children: [
-      { path: 'index', component: _import('userManagement/index'), name: setLang('userManagement.userManagement') },
-      { path: 'userFormDetails', component: _import('userManagement/userFormDetails'), name: setLang('userManagement.userFormDetails'), hidden: true }
+      { path: 'index', component: _import('userManagement/index'), name: '用户管理' },
+      { path: 'userFormDetails', component: _import('userManagement/userFormDetails'), name: '用户表单详情', hidden: true }
     ]
   }
 ]

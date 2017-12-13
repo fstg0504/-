@@ -95,8 +95,6 @@ export default {
         if (this.enActive) {
           return false
         } else {
-//          locale.use(langEn)
-//          Vue.locale('en', langEn)
           Cookies.set('lang', 'en')
           this.zhActive = false
           this.enActive = true
