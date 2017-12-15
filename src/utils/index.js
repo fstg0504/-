@@ -1,6 +1,3 @@
-/**
- * Created by jiachenpan on 16/11/18.
- */
 
  export function parseTime(time, cFormat) {
    if (arguments.length === 0) {
@@ -264,4 +261,48 @@
      }
    }
    return targetObj
+ }
+
+ export function isJSON(str) {
+   if (typeof str === 'string') {
+     try {
+       JSON.parse(str)  // 2
+       if (str.indexOf('{') > -1) {
+         return true
+       } else {
+         return false
+       }
+     } catch (e) {
+       console.error(e)
+       console.log('数据出错，不是正确的json格式', str)
+       return false
+     }
+   }
+   return false
+ }
+ export function getIndexInArrayByItem(arr, item) {
+   const results = []
+   const len = arr.length
+   let pos = 0
+   while (pos < len) {
+     pos = arr.indexOf(item, pos)
+     if (pos === -1) { // 未找到就退出循环完成搜索
+       break
+     }
+     results.push(pos) // 找到就存储索引
+     pos += 1 // 并从下个位置开始搜索
+   }
+   return results
+ }
+ export function getIndexInArrayByObject(arr, item) {
+   const results = []
+   for (const index in arr) {
+     const node = arr[index]
+     for (const key in item) {
+       if (node[key] === item[key]) {
+         results.push(index)
+       }
+     }
+   }
+   return results
  }

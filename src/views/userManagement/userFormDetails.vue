@@ -83,8 +83,11 @@
             </el-table-column>
             <el-table-column align="left" :label="$t('userManagement.answer')" >
               <template scope="scope">
-                <template v-if="scope.row.id==1||scope.row.id==2||scope.row.id==3||scope.row.id==6||scope.row.id==7||scope.row.id==10||scope.row.id==12||scope.row.id==13">
+                <template v-if="scope.row.id==1||scope.row.id==2||scope.row.id==6||scope.row.id==7||scope.row.id==10||scope.row.id==12||scope.row.id==13">
                   <span>{{scope.row.answer}}</span>
+                </template>
+                <template v-if="scope.row.id==3">
+                    <span v-for="item in scope.row.answer">{{item}}；</span>
                 </template>
                 <template v-if="scope.row.id==4">
                   <p v-for="item in scope.row.answer">
@@ -105,13 +108,15 @@
                 </template>
                 <template v-if="scope.row.id==8">
                   <p v-for="item in scope.row.answer">
-                    <span>种类：{{item.type}}；</span>
+                    <span v-if="item.type == '其他'">其他：{{item.name}}；</span>
+                    <span v-else>种类：{{item.type}}；</span>
                     <span>数量：{{item.num}}；</span>
                   </p>
                 </template>
                 <template v-if="scope.row.id==9">
                   <p v-for="item in scope.row.answer">
-                    <span>种类：{{item.type}}；</span>
+                    <span v-if="item.type == '其他'">其他：{{item.name}}；</span>
+                    <span v-else>种类：{{item.type}}；</span>
                     <span>频率：{{item.hz}}；</span>
                   </p>
                 </template>

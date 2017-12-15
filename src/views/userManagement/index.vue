@@ -126,6 +126,7 @@
 <script>
   import waves from '@/directive/waves/index' // 水波纹指令
   import { parseTime } from '@/utils'
+  import { isJSON, getIndexInArrayByObject } from '@/utils'
 
   const calendarTypeOptions = [
     { key: '2', display_name: '非指定人群' },
@@ -185,25 +186,7 @@
       }
     },
     created() {
-      this.listLoading = true
-      this.$http.get('/getUserInfo', { params: this.listQuery }).then(response => {
-        this.listLoading = false
-        const data = response.data
-        if (data.status === 1) {
-          this.list = data.data
-          this.total = data.recordsFiltered
-        } else {
-          this.$message({
-            message: data.data.msg,
-            type: 'warning'
-          })
-        }
-      }, response => {
-        this.$message({
-          message: response.data.data.msg,
-          type: 'warning'
-        })
-      })
+      this.getList()
     },
     methods: {
       getList() {
@@ -220,6 +203,12 @@
           this.listLoading = false
           const data = response.data
           if (data.status === 1) {
+            for (const i in data.data) {
+              const node = data.data[i]
+              if (node.answerlog === '') {
+                node.answerlog = JSON.stringify([])
+              }
+            }
             this.list = data.data
             this.total = data.recordsFiltered
           } else {
@@ -233,7 +222,7 @@
             message: response,
             type: 'warning'
           })
-          console.log('失败：' + response)
+          this.$message.error({ message: `错误信息：${response}` })
         })
       },
       handleFilter() {
@@ -273,50 +262,463 @@
         })
       },
       handleDownloadByAnswer() {
-        this.$message({ message: '功能开发中..', type: 'warning' })
-        return false
-//        require.ensure([], () => {
-//          const { export_json_to_excel } = require('vendor/Export2Excel')
-//          const rowOpt = [
-//            { tHeader: '序号', filterVal: 'index' },
-//            { tHeader: '参与者ID', filterVal: 'actorid' },
-//            { tHeader: '年龄', filterVal: 'age' },
-//            { tHeader: '性别', filterVal: 'sex' },
-//            { tHeader: '工作学习状态', filterVal: 'workStatus' },
-//            { tHeader: '工作类型', filterVal: 'workType' },
-//            { tHeader: '学历', filterVal: '学历' },
-//            { tHeader: '收入类型', filterVal: 'incomeType' },
-//            { tHeader: '收入', filterVal: 'income' },
-//            { tHeader: '居住年数', filterVal: 'LivingYears' },
-//            { tHeader: '同住人数', filterVal: 'WithNumber' },
-//            { tHeader: '同住类型', filterVal: 'LivingType' },
-//            { tHeader: '同住人年龄1', filterVal: 'LivingAge1' },
-//            { tHeader: '同住人性别1', filterVal: 'LivingSex1' },
-//            { tHeader: '同住人关系1', filterVal: 'LivingRelation1' },
-//            { tHeader: '同住人年龄2', filterVal: 'LivingAge2' },
-//            { tHeader: '同住人性别2', filterVal: 'LivingSex2' },
-//            { tHeader: '同住人关系2', filterVal: 'LivingRelation2' },
-//            { tHeader: '同住人年龄3', filterVal: 'LivingAge3' },
-//            { tHeader: '同住人性别3', filterVal: 'LivingSex3' },
-//            { tHeader: '同住人关系3', filterVal: 'LivingRelation3' },
-//          ]
-//          console.log(rowOpt)
-//          const tHeader = rowOpt.map((item) => {
-//            return item.tHeader
-//          })
-//          const filterVal = rowOpt.map((item) => {
-//            return item.filterVal
-//          })
-//          const listArr = this.list.concat()
-//          const resultArr = []
-//          for (const i in listArr) {
-//            resultArr.push({
-//
-//            })
-//          }
-//          const data = this.formatJson(filterVal, resultArr)
-//          export_json_to_excel(tHeader, data, '题目')
-//        })
+        require.ensure([], () => {
+          const { export_json_to_excel } = require('vendor/Export2Excel')
+          const rowOpt = [
+            { tHeader: '序号', filterVal: 'index' },
+            { tHeader: '参与者ID', filterVal: 'actorid' },
+            { tHeader: '年龄', filterVal: 'age' },
+            { tHeader: '性别', filterVal: 'sex' },
+            { tHeader: '工作学习状态', filterVal: 'workStatus' },
+            { tHeader: '工作类型', filterVal: 'workType' },
+            { tHeader: '其他工作', filterVal: 'otherWorkType' },
+            { tHeader: '学历', filterVal: 'education' },
+            { tHeader: '其它学历', filterVal: 'otherEducation' },
+            { tHeader: '收入类型', filterVal: 'incomeType' },
+            { tHeader: '收入', filterVal: 'income' },
+            { tHeader: '居住年数', filterVal: 'LivingYears' },
+            { tHeader: '同住人数', filterVal: 'WithNumber' },
+            { tHeader: '同住类型', filterVal: 'LivingType' },
+            { tHeader: '其它类型', filterVal: 'otherType' },
+            { tHeader: '同住人年龄1', filterVal: 'LivingAge1' },
+            { tHeader: '同住人性别1', filterVal: 'LivingSex1' },
+            { tHeader: '同住人关系1', filterVal: 'LivingRelation1' },
+            { tHeader: '其它关系1', filterVal: 'otherRelation1' },
+            { tHeader: '同住人年龄2', filterVal: 'LivingAge2' },
+            { tHeader: '同住人性别2', filterVal: 'LivingSex2' },
+            { tHeader: '同住人关系2', filterVal: 'LivingRelation2' },
+            { tHeader: '其它关系2', filterVal: 'otherRelation2' },
+            { tHeader: '同住人年龄3', filterVal: 'LivingAge3' },
+            { tHeader: '同住人性别3', filterVal: 'LivingSex3' },
+            { tHeader: '同住人关系3', filterVal: 'LivingRelation3' },
+            { tHeader: '其它关系3', filterVal: 'otherRelation3' },
+            { tHeader: '同住人年龄4', filterVal: 'LivingAge4' },
+            { tHeader: '同住人性别4', filterVal: 'LivingSex4' },
+            { tHeader: '同住人关系4', filterVal: 'LivingRelation4' },
+            { tHeader: '其它关系4', filterVal: 'otherRelation4' },
+            { tHeader: '同住人年龄5', filterVal: 'LivingAge5' },
+            { tHeader: '同住人性别5', filterVal: 'LivingSex5' },
+            { tHeader: '同住人关系5', filterVal: 'LivingRelation5' },
+            { tHeader: '其它关系5', filterVal: 'otherRelation5' },
+            { tHeader: '同住人年龄6', filterVal: 'LivingAge6' },
+            { tHeader: '同住人性别6', filterVal: 'LivingSex6' },
+            { tHeader: '同住人关系6', filterVal: 'LivingRelation6' },
+            { tHeader: '其它关系6', filterVal: 'otherRelation6' },
+            { tHeader: '同住人年龄7', filterVal: 'LivingAge7' },
+            { tHeader: '同住人性别7', filterVal: 'LivingSex7' },
+            { tHeader: '同住人关系7', filterVal: 'LivingRelation7' },
+            { tHeader: '其它关系7', filterVal: 'otherRelation7' },
+            { tHeader: '同住人年龄8', filterVal: 'LivingAge8' },
+            { tHeader: '同住人性别8', filterVal: 'LivingSex8' },
+            { tHeader: '同住人关系8', filterVal: 'LivingRelation8' },
+            { tHeader: '其它关系8', filterVal: 'otherRelation8' },
+            { tHeader: '同住人年龄9', filterVal: 'LivingAge9' },
+            { tHeader: '同住人性别9', filterVal: 'LivingSex9' },
+            { tHeader: '同住人关系9', filterVal: 'LivingRelation9' },
+            { tHeader: '其它关系9', filterVal: 'otherRelation9' },
+            { tHeader: '同住人年龄10', filterVal: 'LivingAge10' },
+            { tHeader: '同住人性别10', filterVal: 'LivingSex10' },
+            { tHeader: '同住人关系10', filterVal: 'LivingRelation10' },
+            { tHeader: '其它关系10', filterVal: 'otherRelation10' },
+            { tHeader: '村频率1', filterVal: 'villageHZ1' },
+            { tHeader: '街道频率1', filterVal: 'streetHZ1' },
+            { tHeader: '区频率1', filterVal: 'zoneHZ1' },
+            { tHeader: '省频率1', filterVal: 'provincesHZ1' },
+            { tHeader: '国外频率1', filterVal: 'abroadHZ1' },
+            { tHeader: '村频率2', filterVal: 'villageHZ2' },
+            { tHeader: '街道频率2', filterVal: 'streetHZ2' },
+            { tHeader: '区频率2', filterVal: 'zoneHZ2' },
+            { tHeader: '省频率2', filterVal: 'provincesHZ2' },
+            { tHeader: '国外频率2', filterVal: 'abroadHZ2' },
+            { tHeader: '接触人数', filterVal: 'ContactNumber' },
+            { tHeader: '健康状态', filterVal: 'healthyState' },
+            { tHeader: '状态不好理由', filterVal: 'stateReason' },
+            { tHeader: '天气', filterVal: 'weather' },
+            { tHeader: '普通特殊天', filterVal: 'specialDay' },
+            { tHeader: '专业接触', filterVal: 'ProfContact' },
+            { tHeader: '专业接触数', filterVal: 'ProfContactNum' },
+            { tHeader: '专业接触年龄1', filterVal: 'ProfContactAge1' },
+            { tHeader: '专业接触年龄2', filterVal: 'ProfContactAge2' },
+            { tHeader: '专业接触年龄3', filterVal: 'ProfContactAge3' },
+            { tHeader: '专业接触年龄4', filterVal: 'ProfContactAge4' },
+            { tHeader: '专业接触年龄5', filterVal: 'ProfContactAge5' },
+            { tHeader: '专业接触年龄不知道', filterVal: 'ProfContactAgeUnknown' },
+//            这里有插入
+            { tHeader: '是否包含所有接触', filterVal: ' allContacts' },
+            { tHeader: '遗漏人数', filterVal: ' missingNum' },
+            { tHeader: '接触人记录准确性', filterVal: 'ContactAccuracy' },
+            { tHeader: '是否喂养动物', filterVal: ' feedAnimals' },
+//            { tHeader: '动物1', filterVal: 'animal1' },
+//            { tHeader: '数量1', filterVal: 'animalNum1' },
+            { tHeader: '其它动物', filterVal: 'OtherAnimal' },
+            { tHeader: '其它动物名称', filterVal: 'OtherAnimalName' },
+            { tHeader: '其它动物数量', filterVal: 'OtherAnimalNum' },
+//            { tHeader: '日常接触动物1', filterVal: 'DailyContactAnimal' },
+//            { tHeader: '日常接触动物频率1', filterVal: 'DailyContactAnimalHZ' },
+            { tHeader: '日常接触其它动物', filterVal: 'DailyContactOtherAnimal' },
+            { tHeader: '日常接触其它动物名称', filterVal: 'DailyContactOtherAnimalName' },
+            { tHeader: '日常接触其它动物频率', filterVal: 'DailyContactOtherAnimalHZ' },
+            { tHeader: '接触活的动物', filterVal: 'ContactLiveAnimal' },
+//            { tHeader: '接触动物种类1', filterVal: 'ContactAnimalSpecies' }, // 10次循环
+//            { tHeader: '接触动物数量1', filterVal: 'ContactNumberOfAnimals' },
+//            { tHeader: '接触动物时间1', filterVal: 'ContactAnimalTime' },
+//            { tHeader: '接触动物地点1', filterVal: 'ContactAnimalLocation' },
+//            { tHeader: '接触动物频率1', filterVal: 'ContactAnimalHZ' },
+            { tHeader: '动物接触记录准确性', filterVal: 'ContactAnimalAccuracy' },
+            { tHeader: '建议', filterVal: 'suggest' },
+          ]
+          const allContacts = []
+          const allContactsIndex = getIndexInArrayByObject(rowOpt, { tHeader: '是否包含所有接触', filterVal: ' allContacts' })
+          for (let i = 0; i < 40; i++) {
+            allContacts.push({ tHeader: `接触时间${Number(i) + 1}`, filterVal: `ContactTime${Number(i) + 1}` })
+            allContacts.push({ tHeader: `接触者年龄${Number(i) + 1}`, filterVal: `ContactAge${Number(i) + 1}` })
+            allContacts.push({ tHeader: `接触者性别${Number(i) + 1}`, filterVal: `ContactSex${Number(i) + 1}` })
+            allContacts.push({ tHeader: `接触者关系${Number(i) + 1}`, filterVal: `ContactRelation${Number(i) + 1}` })
+            allContacts.push({ tHeader: `接触类型${Number(i) + 1}`, filterVal: `ContactType${Number(i) + 1}` })
+            allContacts.push({ tHeader: `接触总时间${Number(i) + 1}`, filterVal: `ContactTotalTime${Number(i) + 1}` })
+            allContacts.push({ tHeader: `接触地点${Number(i) + 1}`, filterVal: `ContactLocation${Number(i) + 1}` })
+            allContacts.push({ tHeader: `接触频率${Number(i) + 1}`, filterVal: `ContactHZ${Number(i) + 1}` })
+            allContacts.push({ tHeader: `提交时间${Number(i) + 1}`, filterVal: `SubmitTime${Number(i) + 1}` })
+          }
+          rowOpt.splice(allContactsIndex[0], 0, ...allContacts)
+          const OtherAnima = []
+          const OtherAnimalIndex = getIndexInArrayByObject(rowOpt, { tHeader: '其它动物', filterVal: 'OtherAnimal' })
+          for (let i = 0; i < 15; i++) {
+            OtherAnima.push({ tHeader: `动物${Number(i) + 1}`, filterVal: `animal${Number(i) + 1}` })
+            OtherAnima.push({ tHeader: `数量${Number(i) + 1}`, filterVal: `animalNum${Number(i) + 1}` })
+          }
+          rowOpt.splice(OtherAnimalIndex[0], 0, ...OtherAnima)
+          const DailyContactOtherAnimal = []
+          const DailyContactOtherAnimalIndex = getIndexInArrayByObject(rowOpt, { tHeader: '日常接触其它动物', filterVal: 'DailyContactOtherAnimal' })
+          for (let i = 0; i < 9; i++) {
+            DailyContactOtherAnimal.push({ tHeader: `日常接触动物${Number(i) + 1}`, filterVal: `DailyContactAnimal${Number(i) + 1}` })
+            DailyContactOtherAnimal.push({ tHeader: `日常接触动物频率${Number(i) + 1}`, filterVal: `DailyContactAnimalHZ${Number(i) + 1}` })
+          }
+          rowOpt.splice(DailyContactOtherAnimalIndex[0], 0, ...DailyContactOtherAnimal)
+          const ContactAnimalAccuracy = []
+          const ContactAnimalAccuracyIndex = getIndexInArrayByObject(rowOpt, { tHeader: '动物接触记录准确性', filterVal: 'ContactAnimalAccuracy' })
+          for (let i = 0; i < 10; i++) {
+            ContactAnimalAccuracy.push({ tHeader: `接触动物种类${Number(i) + 1}`, filterVal: `ContactAnimalSpecies${Number(i) + 1}` })
+            ContactAnimalAccuracy.push({ tHeader: `接触动物数量${Number(i) + 1}`, filterVal: `ContactNumberOfAnimals${Number(i) + 1}` })
+            ContactAnimalAccuracy.push({ tHeader: `接触动物时间${Number(i) + 1}`, filterVal: `ContactAnimalTime${Number(i) + 1}` })
+            ContactAnimalAccuracy.push({ tHeader: `接触动物地点${Number(i) + 1}`, filterVal: `ContactAnimalLocation${Number(i) + 1}` })
+            ContactAnimalAccuracy.push({ tHeader: `接触动物频率${Number(i) + 1}`, filterVal: `ContactAnimalHZ${Number(i) + 1}` })
+          }
+          rowOpt.splice(ContactAnimalAccuracyIndex[0], 0, ...ContactAnimalAccuracy)
+          const IDArr = this.list.map((item) => {
+            return item.actorid ? item.actorid : item.id
+          })
+          const tHeader = rowOpt.map((item) => {
+            return item.tHeader
+          })
+          const filterVal = rowOpt.map((item) => {
+            return item.filterVal
+          })
+          const locanswerArr = this.list.map((item, i) => {
+            let locanswer = item.locanswer
+            if (isJSON(locanswer)) {
+              locanswer = JSON.parse(locanswer)
+              return locanswer
+            } else {
+              console.log(`用户id或者参与者id为${IDArr[i]}，接触中日志数据格式不对，可能会影响Excel的下载`)
+            }
+          })
+          const answerlogArr = this.list.map((item, i) => {
+            let answerlog = item.answerlog
+            if (isJSON(answerlog)) {
+              answerlog = JSON.parse(answerlog)
+              return answerlog
+            } else {
+              console.log(`用户id或者参与者id为${IDArr[i]}，接触中日志数据格式不对，可能会影响Excel的下载`)
+              return []
+            }
+          })
+          const resultArr1 = []
+          const resultArr2 = []
+          for (const i in locanswerArr) {
+            const item = locanswerArr[i]
+            const result = {}
+            item.forEach((node, j) => {
+              result.index = Number(i) + 1
+              result.actorid = IDArr[i]
+              switch (node.id) {
+                case 1: {
+                  result.age = node.answer
+                  break
+                }
+                case 2: {
+                  result.sex = node.answer
+                  break
+                }
+                case 3: {
+                  result.workStatus = node.answer
+                  break
+                }
+                case 4: {
+                  if (node.answer === '学龄前' || node.answer === '学生' || node.answer === '退休' || node.answer === '待业' || node.answer === '服务类' || node.answer === '医疗卫生' || node.answer === '技能类' || node.answer === '专业技术人员' || node.answer === '家庭主妇/夫' || node.answer === '售卖活禽或肉类' || node.answer === '不知道' || node.answer === '不愿意回答') {
+                    result.workType = node.answer
+                    result.otherWorkType = ''
+                  } else {
+                    result.workType = ''
+                    result.otherWorkType = node.answer
+                  }
+                  break
+                }
+                case 5: {
+                  if (node.answer === '无' || node.answer === '小学' || node.answer === '初中' || node.answer === '高中' || node.answer === '不知道' || node.answer === '不愿意回答') {
+                    result.education = node.answer
+                    result.otherEducation = ''
+                  } else {
+                    result.education = ''
+                    result.otherEducation = node.answer
+                  }
+                  break
+                }
+                case 6: {
+                  result.incomeType = node.type
+                  result.income = node.scope
+                  break
+                }
+                case 7: {
+                  result.LivingYears = node.answer
+                  break
+                }
+                case 8: {
+                  if (node.type === '家庭' || node.type === '合租公寓' || node.type === '学生宿舍') {
+                    result.LivingType = node.type
+                    result.otherType = ''
+                  } else {
+                    result.LivingType = ''
+                    result.otherType = node.type
+                  }
+                  result.WithNumber = node.num
+                  break
+                }
+                case 9: {
+                  node.answer.forEach((item, index) => {
+                    result[`LivingAge${index + 1}`] = item.age
+                    result[`LivingSex${index + 1}`] = item.sex
+                    if (item.relation === '配偶' || item.relation === '父母' || item.relation === '孩子' || item.relation === '兄弟姐妹' || item.relation === '祖（外）祖父母' || item.relation === '（外）孙子/女' || item.relation === '同学' || item.relation === '同事' || item.relation === '男女朋友' || item.relation === '合租关系' || item.relation === '不愿意回答') {
+                      result[`LivingRelation${index + 1}`] = item.relation
+                      result[`otherRelation${index + 1}`] = ''
+                    } else {
+                      result[`LivingRelation${index + 1}`] = ''
+                      result[`otherRelation${index + 1}`] = item.relation
+                    }
+                  })
+                  break
+                }
+                case 10: {
+                  node.answer.forEach((item, index) => {
+                    switch (item.scope) {
+                      case '村以外': {
+                        result.villageHZ1 = item.hz
+                        break
+                      }
+                      case '街道/乡镇以外': {
+                        result.streetHZ1 = item.hz
+                        break
+                      }
+                      case '区/县以外': {
+                        result.zoneHZ1 = item.hz
+                        break
+                      }
+                      case '省/市以外': {
+                        result.provincesH1 = item.hz
+                        break
+                      }
+                      case '国外': {
+                        result.abroadHZ1 = item.hz
+                        break
+                      }
+                      default:
+                        this.$message({ message: `id为10的scope数据格式不对，可能会影响Excel的下载`, type: 'warning' })
+                        console.log(`用户id或者参与者id为${IDArr[i]}，题目id为10的scope数据格式不对，可能会影响Excel的下载`)
+                    }
+                  })
+                  break
+                }
+                case 11: {
+                  node.answer.forEach((item, index) => {
+                    switch (item.scope) {
+                      case '村以外': {
+                        result.villageHZ2 = item.hz
+                        break
+                      }
+                      case '街道/乡镇以外': {
+                        result.streetHZ2 = item.hz
+                        break
+                      }
+                      case '区/县以外': {
+                        result.zoneHZ2 = item.hz
+                        break
+                      }
+                      case '省/市以外': {
+                        result.provincesH2 = item.hz
+                        break
+                      }
+                      case '国外': {
+                        result.abroadHZ2 = item.hz
+                        break
+                      }
+                      default:
+                        this.$message({ message: `id为11的scope数据格式不对，可能会影响Excel的下载`, type: 'warning' })
+                        console.log(`用户id或者参与者id为${IDArr[i]}，题目id为11的scope数据格式不对，可能会影响Excel的下载`)
+                    }
+                  })
+                  break
+                }
+                case 12: {
+                  result.ContactNumber = node.answer
+                  break
+                }
+                case 13: {
+                  result.healthyState = node.answer.grade
+                  result.stateReason = node.answer.reson
+                  break
+                }
+                case 14: {
+                  result.weather = node.answer
+                  break
+                }
+                case 15: {
+                  result.specialDay = node.answer
+                  break
+                }
+                default:
+                  this.$message({ message: `用户id或者参与者id为${IDArr[i]}的数据格式不对，可能会影响Excel的下载`, type: 'warning' })
+                  console.log(`用户id或者参与者id为${IDArr[i]}的数据格式不对，可能会影响Excel的下载`)
+              }
+            })
+            resultArr1.push(result)
+          }
+          for (const i in answerlogArr) {
+            const item = answerlogArr[i]
+            const result = {}
+            item.forEach((node, j) => {
+              result.index = Number(i) + 1
+              result.actorid = IDArr[i]
+              switch (node.id) {
+                case 1: {
+                  result.ProfContact = node.answer
+                  break
+                }
+                case 2: {
+                  result.ProfContactNum = node.answer
+                  break
+                }
+                case 3: {
+                  node.answer.forEach((item, i) => {
+                    result[`ProfContactAge${Number(i) + 1}`] = item.age
+                  })
+                  break
+                }
+                case 4: {
+                  node.answer.forEach((item, i) => {
+                    result[`ContactTime${Number(i) + 1}`] = item.cTime
+                    result[`ContactAge${Number(i) + 1}`] = item.age
+                    result[`ContactSex${Number(i) + 1}`] = item.sex
+                    result[`ContactRelation${Number(i) + 1}`] = item.relation
+                    result[`ContactType${Number(i) + 1}`] = item.contactType
+                    result[`ContactTotalTime${Number(i) + 1}`] = item.age
+                    result[`ContactLocation${Number(i) + 1}`] = item.contactLocation
+                    result[`ContactHZ${Number(i) + 1}`] = item.contactHz
+                    result[`SubmitTime${Number(i) + 1}`] = parseTime(item.submitTime, '{y}-{m}-{d} {h}:{i}')
+                  })
+                  break
+                }
+                case 5: {
+                  if (node.answer.index === 1) {
+                    result.allContacts = '否'
+                    result.missingNum = node.answer.num
+                  } else {
+                    result.allContacts = '是'
+                    result.missingNum = ''
+                  }
+                  break
+                }
+                case 6: {
+                  result.ContactAccuracy = node.answer
+                  break
+                }
+                case 7: {
+                  result.feedAnimals = node.answer
+                  break
+                }
+                case 8: {
+                  node.answer.forEach((item, i) => {
+                    result[`animal${Number(i) + 1}`] = item.type
+                    result[`animalNum${Number(i) + 1}`] = item.num
+                    result.OtherAnimal = '否'
+                    result.OtherAnimalName = ''
+                    result.OtherAnimalNum = ''
+                  })
+                  const someResult = node.answer.some((item) => {
+                    return (item.type === '其他')
+                  })
+                  if (someResult) {
+                    const index = getIndexInArrayByObject(node.answer, { type: '其他' })[0]
+                    result.OtherAnimal = '是'
+                    result.OtherAnimalName = node.answer[index].type
+                    result.OtherAnimalNum = node.answer[index].num
+                  }
+                  break
+                }
+                case 9: {
+                  node.answer.forEach((item, i) => {
+                    result[`DailyContactAnimal${Number(i) + 1}`] = item.type
+                    result[`DailyContactAnimalHZ${Number(i) + 1}`] = item.hz
+                    result.DailyContactOtherAnimal = '是'
+                    result.DailyContactOtherAnimalName = ''
+                    result.DailyContactOtherAnimalHZ = ''
+                  })
+                  const someResult = node.answer.some((item) => {
+                    return (item.type === '其他')
+                  })
+                  if (someResult) {
+                    const index = getIndexInArrayByObject(node.answer, { type: '其他' })[0]
+                    result.DailyContactOtherAnimal = '是'
+                    result.DailyContactOtherAnimalName = node.answer[index].type
+                    result.DailyContactOtherAnimalHZ = node.answer[index].hz
+                  }
+                  break
+                }
+                case 10: {
+                  result.ContactLiveAnimal = node.answer
+                  break
+                }
+                case 11: {
+                  node.answer.forEach((item, i) => {
+                    result[`ContactAnimalSpecies${Number(i) + 1}`] = item.type
+                    result[`ContactNumberOfAnimals${Number(i) + 1}`] = item.num
+                    result[`ContactAnimalTime${Number(i) + 1}`] = item.contacttime
+                    result[`ContactAnimalLocation${Number(i) + 1}`] = item.contactLocation
+                    result[`ContactAnimalHZ${Number(i) + 1}`] = item.hz || ''
+                  })
+                  break
+                }
+                case 12: {
+                  result.ContactAnimalAccuracy = node.answer
+                  break
+                }
+                case 13: {
+                  result.suggest = node.answer
+                  break
+                }
+                default:
+                  this.$message({ message: `用户id或者参与者id为${IDArr[i]}的数据格式不对，可能会影响Excel的下载`, type: 'warning' })
+                  console.log(`用户id或者参与者id为${IDArr[i]}的数据格式不对，可能会影响Excel的下载`)
+              }
+            })
+            resultArr2.push(result)
+          }
+          debugger
+          const resultArrAll = resultArr1.map((item, index) => {
+            return Object.assign(item, resultArr2[index])
+          })
+          const data = this.formatJson(filterVal, resultArrAll)
+          export_json_to_excel(tHeader, data, '根据题目导出数据')
+        })
       },
       handleBatchDownloadByGetLocalLog(sig) {
         const IDArr = this.list.map((item) => {
