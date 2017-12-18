@@ -145,25 +145,25 @@
         </div>
         <div class="el-table-container">
           <el-table :key='tableKey3' :data="localLogList" v-loading="listLoading" :element-loading-text="$t('utils.loadText')" border fit highlight-current-row style="width: 100%">
-            <el-table-column type="index" width="65">序号</el-table-column>
-            <el-table-column align="center" label="日期">
+            <el-table-column align="center" type="index" width="85" label="INDEX"></el-table-column>
+            <el-table-column align="center" label="DATE">
               <template scope="scope">
                 <span v-if="scope.row.nowtime">{{scope.row.nowtime | fomentDateYMD}}</span>
                 <span v-else>无</span>
               </template>
             </el-table-column>
-            <el-table-column align="center" label="时间">
+            <el-table-column align="center" label="TIME">
               <template scope="scope">
                 <span v-if="scope.row.nowtime">{{scope.row.nowtime | fomentDateHIS}}</span>
                 <span v-else>无</span>
               </template>
             </el-table-column>
-            <el-table-column align="center" label="经度">
+            <el-table-column align="center" label="LATITUDE">
               <template scope="scope">
                 <span>{{scope.row.locationlog.lon}}</span>
               </template>
             </el-table-column>
-            <el-table-column align="center" label="维度">
+            <el-table-column align="center" label="LONGITUDE">
               <template scope="scope">
                 <span>{{scope.row.locationlog.lat}}</span>
               </template>
@@ -461,7 +461,7 @@
               break
             }
             case 3: {
-              const tHeader3 = ['序号', '日期', '时间', '纬度', '经度']
+              const tHeader3 = ['INDEX', 'DATE', 'TIME', 'LATITUDE', 'LONGITUDE']
               const filterVal3 = ['index', 'date1', 'date2', 'lon', 'lat']
               const localLogListArr = this.localLogList.concat()
               const resultArr = []

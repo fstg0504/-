@@ -43,6 +43,16 @@
           :end-placeholder="$t('utils.endTime')">
         </el-date-picker>
       </div>
+      <div class="block filter-item filter-date">
+        <span class="demonstration">接触日志开始时间：</span>
+        <el-date-picker
+          v-model="filterDate5"
+          type="daterange"
+          :range-separator="$t('utils.to')"
+          :start-placeholder="$t('utils.startTime')"
+          :end-placeholder="$t('utils.endTime')">
+        </el-date-picker>
+      </div>
 
       <el-select clearable class="filter-item" style="width: 130px" v-model="listQuery.crowd" :placeholder="$t('userManagement.crowdtype')">
         <el-option v-for="item in  calendarTypeOptions" :key="item.key" :label="item.display_name" :value="item.key">
@@ -51,8 +61,6 @@
       <el-button class="filter-item" type="primary" v-waves icon="search" @click="handleFilter">{{$t('utils.search')}}</el-button>
       <el-button class="filter-item" type="primary" icon="document" @click="handleDownload">导出当前页数据</el-button>
       <el-button class="filter-item" type="primary" icon="document" @click="handleDownloadByAnswer">根据题目导出数据</el-button>
-      <el-button class="filter-item" type="primary" icon="document" @click="handleBatchDownloadByGetLocalLog(1)">批量导出基本信息</el-button>
-      <el-button class="filter-item" type="primary" icon="document" @click="handleBatchDownloadByGetLocalLog(2)">批量导出接触日志</el-button>
       <el-button class="filter-item" type="primary" icon="document" @click="handleBatchDownloadByGetLocalLog(3)">批量导出定位信息</el-button>
     </div>
 
@@ -151,6 +159,7 @@
         filterDate2: ['', ''],
         filterDate3: ['', ''],
         filterDate4: ['', ''],
+        filterDate5: ['', ''],
         total: null,
         listLoading: true,
         listQuery: {
@@ -199,6 +208,8 @@
         this.listQuery.locationTime1End = this.filterDate3[1] ? parseTime(this.filterDate3[1]).toString() : '0-0-0 0:0:0'
         this.listQuery.locationTime2Start = this.filterDate4[0] ? parseTime(this.filterDate4[0]).toString() : '0-0-0 0:0:0'
         this.listQuery.locationTime2End = this.filterDate4[1] ? parseTime(this.filterDate4[1]).toString() : '0-0-0 0:0:0'
+        this.listQuery.touchlogstart = this.filterDate5[0] ? parseTime(this.filterDate5[0]).toString() : '0-0-0 0:0:0'
+        this.listQuery.touchlogend = this.filterDate5[1] ? parseTime(this.filterDate5[1]).toString() : '0-0-0 0:0:0'
         this.$http.get('/getUserInfo', { params: this.listQuery }).then(response => {
           this.listLoading = false
           const data = response.data
@@ -443,34 +454,34 @@
               result.actorid = IDArr[i]
               switch (node.id) {
                 case 1: {
-                  result.age = node.answer
+                  result.age = node.answer || ''
                   break
                 }
                 case 2: {
-                  result.sex = node.answer
+                  result.sex = node.answer || ''
                   break
                 }
                 case 3: {
-                  result.workStatus = node.answer
+                  result.workStatus = node.answer || ''
                   break
                 }
                 case 4: {
-                  if (node.answer === '学龄前' || node.answer === '学生' || node.answer === '退休' || node.answer === '待业' || node.answer === '服务类' || node.answer === '医疗卫生' || node.answer === '技能类' || node.answer === '专业技术人员' || node.answer === '家庭主妇/夫' || node.answer === '售卖活禽或肉类' || node.answer === '不知道' || node.answer === '不愿意回答') {
-                    result.workType = node.answer
-                    result.otherWorkType = ''
-                  } else {
+                  if (node.answer.indexOf('其他') > -1) {
                     result.workType = ''
-                    result.otherWorkType = node.answer
+                    result.otherWorkType = node.answer.split(':')[1] || ''
+                  } else {
+                    result.workType = node.answer || ''
+                    result.otherWorkType = ''
                   }
                   break
                 }
                 case 5: {
-                  if (node.answer === '无' || node.answer === '小学' || node.answer === '初中' || node.answer === '高中' || node.answer === '不知道' || node.answer === '不愿意回答') {
+                  if (node.answer.indexOf('其他') > -1) {
+                    result.education = ''
+                    result.otherEducation = node.answer.split(':')[1] || ''
+                  } else {
                     result.education = node.answer
                     result.otherEducation = ''
-                  } else {
-                    result.education = ''
-                    result.otherEducation = node.answer
                   }
                   break
                 }
@@ -480,18 +491,18 @@
                   break
                 }
                 case 7: {
-                  result.LivingYears = node.answer
+                  result.LivingYears = node.answer || ''
                   break
                 }
                 case 8: {
-                  if (node.type === '家庭' || node.type === '合租公寓' || node.type === '学生宿舍') {
-                    result.LivingType = node.type
-                    result.otherType = ''
-                  } else {
+                  if (node.answer.type.indexOf('其他') > -1) {
                     result.LivingType = ''
-                    result.otherType = node.type
+                    result.otherType = node.answer.type.split(':')[1] || ''
+                  } else {
+                    result.LivingType = node.answer.type || ''
+                    result.otherType = ''
                   }
-                  result.WithNumber = node.num
+                  result.WithNumber = node.answer.num
                   break
                 }
                 case 9: {
@@ -569,7 +580,7 @@
                   break
                 }
                 case 12: {
-                  result.ContactNumber = node.answer
+                  result.ContactNumber = node.answer || ''
                   break
                 }
                 case 13: {
@@ -578,11 +589,11 @@
                   break
                 }
                 case 14: {
-                  result.weather = node.answer
+                  result.weather = node.answer || ''
                   break
                 }
                 case 15: {
-                  result.specialDay = node.answer
+                  result.specialDay = node.answer || ''
                   break
                 }
                 default:
@@ -600,11 +611,11 @@
               result.actorid = IDArr[i]
               switch (node.id) {
                 case 1: {
-                  result.ProfContact = node.answer
+                  result.ProfContact = node.answer || ''
                   break
                 }
                 case 2: {
-                  result.ProfContactNum = node.answer
+                  result.ProfContactNum = node.answer || ''
                   break
                 }
                 case 3: {
@@ -638,11 +649,11 @@
                   break
                 }
                 case 6: {
-                  result.ContactAccuracy = node.answer
+                  result.ContactAccuracy = node.answer || ''
                   break
                 }
                 case 7: {
-                  result.feedAnimals = node.answer
+                  result.feedAnimals = node.answer || ''
                   break
                 }
                 case 8: {
@@ -684,7 +695,7 @@
                   break
                 }
                 case 10: {
-                  result.ContactLiveAnimal = node.answer
+                  result.ContactLiveAnimal = node.answer || ''
                   break
                 }
                 case 11: {
@@ -698,11 +709,11 @@
                   break
                 }
                 case 12: {
-                  result.ContactAnimalAccuracy = node.answer
+                  result.ContactAnimalAccuracy = node.answer || ''
                   break
                 }
                 case 13: {
-                  result.suggest = node.answer
+                  result.suggest = node.answer || ''
                   break
                 }
                 default:
@@ -712,7 +723,6 @@
             })
             resultArr2.push(result)
           }
-          debugger
           const resultArrAll = resultArr1.map((item, index) => {
             return Object.assign(item, resultArr2[index])
           })
@@ -728,17 +738,6 @@
           case 1: {
             this.list.map((item, index) => {
               const DATA = JSON.parse(item.locanswer)
-              for (const i in DATA) {
-                const node = DATA[i]
-                node.question = this.$t('basicInfoQuestions.q' + (node.id))
-              }
-              this.LocationInformationDownload(DATA, IDArr[index], sig)
-            })
-            break
-          }
-          case 2: {
-            this.list.map((item, index) => {
-              const DATA = JSON.parse(item.answerlog)
               for (const i in DATA) {
                 const node = DATA[i]
                 node.question = this.$t('basicInfoQuestions.q' + (node.id))
@@ -891,7 +890,7 @@
               break
             }
             case 3: {
-              const tHeader3 = ['序号', '日期', '时间', '纬度', '经度']
+              const tHeader3 = ['INDEX', 'DATE', 'TIME', 'LATITUDE', 'LONGITUDE']
               const filterVal3 = ['index', 'date1', 'date2', 'lon', 'lat']
               const localLogListArr = DATA
               const resultArr = []
