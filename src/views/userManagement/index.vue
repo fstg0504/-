@@ -467,7 +467,7 @@
                 }
                 case 4: {
                   if (node.answer.indexOf('其他') > -1) {
-                    result.workType = ''
+                    result.workType = '其他'
                     result.otherWorkType = node.answer.split(':')[1] || ''
                   } else {
                     result.workType = node.answer || ''
@@ -477,7 +477,7 @@
                 }
                 case 5: {
                   if (node.answer.indexOf('其他') > -1) {
-                    result.education = ''
+                    result.education = '其他'
                     result.otherEducation = node.answer.split(':')[1] || ''
                   } else {
                     result.education = node.answer
@@ -486,8 +486,8 @@
                   break
                 }
                 case 6: {
-                  result.incomeType = node.type
-                  result.income = node.scope
+                  result.incomeType = node.answer.type
+                  result.income = node.answer.scope
                   break
                 }
                 case 7: {
@@ -496,7 +496,7 @@
                 }
                 case 8: {
                   if (node.answer.type.indexOf('其他') > -1) {
-                    result.LivingType = ''
+                    result.LivingType = '其他'
                     result.otherType = node.answer.type.split(':')[1] || ''
                   } else {
                     result.LivingType = node.answer.type || ''
@@ -509,12 +509,12 @@
                   node.answer.forEach((item, index) => {
                     result[`LivingAge${index + 1}`] = item.age
                     result[`LivingSex${index + 1}`] = item.sex
-                    if (item.relation === '配偶' || item.relation === '父母' || item.relation === '孩子' || item.relation === '兄弟姐妹' || item.relation === '祖（外）祖父母' || item.relation === '（外）孙子/女' || item.relation === '同学' || item.relation === '同事' || item.relation === '男女朋友' || item.relation === '合租关系' || item.relation === '不愿意回答') {
+                    if (item.relation.indexOf('其他') > -1) {
+                      result[`LivingRelation${index + 1}`] = '其他'
+                      result[`otherRelation${index + 1}`] = item.relation.split(':')[item.relation.split(':').length - 1] || ''
+                    } else {
                       result[`LivingRelation${index + 1}`] = item.relation
                       result[`otherRelation${index + 1}`] = ''
-                    } else {
-                      result[`LivingRelation${index + 1}`] = ''
-                      result[`otherRelation${index + 1}`] = item.relation
                     }
                   })
                   break
