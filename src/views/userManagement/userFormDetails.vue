@@ -99,7 +99,7 @@
                     <span v-html="'总时间：'+item.contacttime+'；'"></span>
                     <span>接触地点：{{item.contactLocation}}；</span>
                     <span>平时的接触频率：{{item.contactHz}}；</span>
-                    <span>提交时间：{{item.submitTime | parseTime('{y}-{m}-{d} {h}:{i}')}}；</span>
+                    <span>提交时间：{{item.submitTime | parseTime('{y}-{m}-{d} {h}:{i}:{s}')}}；</span>
                   </p>
                 </template>
                 <template v-if="scope.row.id==5">
@@ -132,7 +132,7 @@
             </el-table-column>
             <el-table-column align="center" :label="$t('utils.submitTime')" >
               <template scope="scope">
-                <span>{{scope.row.submitTime | parseTime('{y}-{m}-{d} {h}:{i}')}}</span>
+                <span>{{scope.row.submitTime | parseTime('{y}-{m}-{d} {h}:{i}:{s}')}}</span>
               </template>
             </el-table-column>
           </el-table>
@@ -144,7 +144,7 @@
           <el-button v-if="ad_level.indexOf('1')>-1" class="filter-item" type="primary" icon="document" @click="handleDownload(3)">导出</el-button>
         </div>
         <div class="el-table-container">
-          <el-table :key='tableKey3' :data="localLogList" v-loading="listLoading" :element-loading-text="$t('utils.loadText')" border fit highlight-current-row style="width: 100%">
+          <el-table :key='tableKey3' height="450" :data="localLogList" v-loading="listLoading" :element-loading-text="$t('utils.loadText')" border fit highlight-current-row style="width: 100%">
             <el-table-column align="center" type="index" width="85" label="INDEX"></el-table-column>
             <el-table-column align="center" label="DATE">
               <template scope="scope">
@@ -160,24 +160,27 @@
             </el-table-column>
             <el-table-column align="center" label="LATITUDE">
               <template scope="scope">
-                <span>{{scope.row.locationlog.lon}}</span>
+                <span>{{scope.row.locationlog.lat}}</span>
               </template>
             </el-table-column>
             <el-table-column align="center" label="LONGITUDE">
               <template scope="scope">
-                <span>{{scope.row.locationlog.lat}}</span>
+                <span>{{scope.row.locationlog.lon}}</span>
               </template>
             </el-table-column>
           </el-table>
-          <div v-show="!listLoading" class="pagination-container">
-            <el-pagination
-              @size-change="handleSizeChange"
-              @current-change="handleCurrentChange"
-              current-page.sync="1"
-              :page-size="listQuery.length"
-              layout="total, prev, pager, next"
-              :total="total">
-            </el-pagination>
+          <div class="pagination-container">
+            <div class="block">
+              <el-pagination
+                @size-change="handleSizeChange"
+                @current-change="handleCurrentChange"
+                :current-page="1"
+                :page-sizes="[10, 20, 50, 100, 500, total]"
+                :page-size="listQuery.length"
+                layout="total, sizes, prev, pager, next"
+                :total="total">
+              </el-pagination>
+            </div>
           </div>
         </div>
       </el-tab-pane>
@@ -311,6 +314,7 @@
         })
       },
       getLocation() {
+        this.listLoading = true
         this.$http.get('/getLocalLog', { params: this.listQuery }).then(response => {
           this.listLoading = false
           const data = response.data
@@ -328,6 +332,7 @@
       },
       handleSizeChange(val) {
         this.listQuery.start = 0
+        this.listQuery.length = val
         this.getLocation()
       },
       handleCurrentChange(val) {
@@ -418,18 +423,18 @@
                     case 4:
                       for (const i in answer) {
                         const node = answer[i]
-                        answerStr += `年龄：${node.age}；性别：${node.sex}；接触时间：${node.cTime}；关系：${node.relation}；接触类型：${node.contactType}；总时间：${node.contacttime}；接触地点：${node.contactLocation}；平时的接触频率:${node.contactHz}；提交时间:${node.submitTime}\r\n`
+                        answerStr += `年龄：${node.age}；性别：${node.sex}；接触时间：${node.cTime}；关系：${node.relation}；接触类型：${node.contactType}；总时间：${node.contacttime}；接触地点：${node.contactLocation}；平时的接触频率:${node.contactHz}；提交时间:${parseTime(node.submitTime)}；\r\n`
                       }
                       break
                     case 5:
                       if (answer.state === '是') {
-                        answerStr = node.num
+                        answerStr = answer.num
                       } else {
-                        answerStr = `估计遗漏数量：${node.num}`
+                        answerStr = `没有；估计遗漏数量：${answer.num}`
                       }
                       break
                     case 8:
-                      answerStr = `种类：${node.type}；数量：${node.num}`
+                      answerStr = `种类：${answer.type}；数量：${answer.num}`
                       break
                     case 9:
                       for (const i in answer) {
@@ -462,7 +467,7 @@
             }
             case 3: {
               const tHeader3 = ['INDEX', 'DATE', 'TIME', 'LATITUDE', 'LONGITUDE']
-              const filterVal3 = ['index', 'date1', 'date2', 'lon', 'lat']
+              const filterVal3 = ['index', 'date1', 'date2', 'lat', 'lon']
               const localLogListArr = this.localLogList.concat()
               const resultArr = []
               for (const i in localLogListArr) {
@@ -471,12 +476,11 @@
                   index: Number(i) + 1,
                   date1: node.nowtime ? this.fomentDateYMD(node.nowtime) : `无`,
                   date2: node.nowtime ? this.fomentDateHIS(node.nowtime) : `无`,
+                  lat: node.locationlog.lat,
                   lon: node.locationlog.lon,
-                  lat: node.locationlog.lat
                 })
               }
               const data3 = this.formatJson(filterVal3, resultArr)
-              console.log(data3)
               export_json_to_excel(tHeader3, data3, '定位数据记录信息')
               break
             }

@@ -64,7 +64,7 @@
       <el-button class="filter-item" type="primary" icon="document" @click="handleBatchDownloadByGetLocalLog(3)">批量导出定位信息</el-button>
     </div>
 
-    <el-table :key='tableKey' :data="list" v-loading="listLoading" :element-loading-text="$t('utils.loadText')" border fit highlight-current-row style="width: 100%">
+    <el-table :key='tableKey' height="450" :data="list" v-loading="listLoading" :element-loading-text="$t('utils.loadText')" border fit highlight-current-row style="width: 100%">
       <el-table-column align="center" type="index" width="55"></el-table-column>
       <el-table-column align="center" label="ID" width="65">
         <template scope="scope">
@@ -118,15 +118,18 @@
       </el-table-column>
     </el-table>
 
-    <div v-show="!listLoading" class="pagination-container">
+    <div class="pagination-container">
+      <div class="block">
         <el-pagination
           @size-change="handleSizeChange"
           @current-change="handleCurrentChange"
-          current-page.sync="1"
+          :current-page="1"
+          :page-sizes="[10, 20, 50, 100, total]"
           :page-size="listQuery.length"
-          layout="total, prev, pager, next"
+          layout="total, sizes, prev, pager, next"
           :total="total">
         </el-pagination>
+      </div>
     </div>
   </div>
 </template>
@@ -241,6 +244,7 @@
       },
       handleSizeChange(val) {
         this.listQuery.start = 0
+        this.listQuery.length = val
         this.getList()
       },
       handleCurrentChange(val) {
@@ -417,7 +421,10 @@
           }
           rowOpt.splice(ContactAnimalAccuracyIndex[0], 0, ...ContactAnimalAccuracy)
           const IDArr = this.list.map((item) => {
-            return item.actorid ? item.actorid : item.id
+            return item.id
+          })
+          const actoridArr = this.list.map((item) => {
+            return item.actorid || ''
           })
           const tHeader = rowOpt.map((item) => {
             return item.tHeader
@@ -431,7 +438,7 @@
               locanswer = JSON.parse(locanswer)
               return locanswer
             } else {
-              console.log(`用户id或者参与者id为${IDArr[i]}，接触中日志数据格式不对，可能会影响Excel的下载`)
+              console.log(`用户id为${IDArr[i]}，接触中日志数据格式不对，可能会影响Excel的下载`)
             }
           })
           const answerlogArr = this.list.map((item, i) => {
@@ -440,7 +447,7 @@
               answerlog = JSON.parse(answerlog)
               return answerlog
             } else {
-              console.log(`用户id或者参与者id为${IDArr[i]}，接触中日志数据格式不对，可能会影响Excel的下载`)
+              console.log(`用户id为${IDArr[i]}，接触中日志数据格式不对，可能会影响Excel的下载`)
               return []
             }
           })
@@ -451,7 +458,7 @@
             const result = {}
             item.forEach((node, j) => {
               result.index = Number(i) + 1
-              result.actorid = IDArr[i]
+              result.actorid = actoridArr[i]
               switch (node.id) {
                 case 1: {
                   result.age = node.answer || ''
@@ -544,7 +551,7 @@
                       }
                       default:
                         this.$message({ message: `id为10的scope数据格式不对，可能会影响Excel的下载`, type: 'warning' })
-                        console.log(`用户id或者参与者id为${IDArr[i]}，题目id为10的scope数据格式不对，可能会影响Excel的下载`)
+                        console.log(`用户id为${IDArr[i]}，题目id为10的scope数据格式不对，可能会影响Excel的下载`)
                     }
                   })
                   break
@@ -574,7 +581,7 @@
                       }
                       default:
                         this.$message({ message: `id为11的scope数据格式不对，可能会影响Excel的下载`, type: 'warning' })
-                        console.log(`用户id或者参与者id为${IDArr[i]}，题目id为11的scope数据格式不对，可能会影响Excel的下载`)
+                        console.log(`用户id为${IDArr[i]}，题目id为11的scope数据格式不对，可能会影响Excel的下载`)
                     }
                   })
                   break
@@ -597,8 +604,8 @@
                   break
                 }
                 default:
-                  this.$message({ message: `用户id或者参与者id为${IDArr[i]}的数据格式不对，可能会影响Excel的下载`, type: 'warning' })
-                  console.log(`用户id或者参与者id为${IDArr[i]}的数据格式不对，可能会影响Excel的下载`)
+                  this.$message({ message: `用户id为${IDArr[i]}的数据格式不对，可能会影响Excel的下载`, type: 'warning' })
+                  console.log(`用户id为${IDArr[i]}的数据格式不对，可能会影响Excel的下载`)
               }
             })
             resultArr1.push(result)
@@ -717,8 +724,8 @@
                   break
                 }
                 default:
-                  this.$message({ message: `用户id或者参与者id为${IDArr[i]}的数据格式不对，可能会影响Excel的下载`, type: 'warning' })
-                  console.log(`用户id或者参与者id为${IDArr[i]}的数据格式不对，可能会影响Excel的下载`)
+                  this.$message({ message: `用户id为${IDArr[i]}的数据格式不对，可能会影响Excel的下载`, type: 'warning' })
+                  console.log(`用户id为${IDArr[i]}的数据格式不对，可能会影响Excel的下载`)
               }
             })
             resultArr2.push(result)
@@ -732,7 +739,7 @@
       },
       handleBatchDownloadByGetLocalLog(sig) {
         const IDArr = this.list.map((item) => {
-          return item.actorid ? item.actorid : item.id
+          return item.id
         })
         switch (sig) {
           case 1: {
@@ -891,7 +898,7 @@
             }
             case 3: {
               const tHeader3 = ['INDEX', 'DATE', 'TIME', 'LATITUDE', 'LONGITUDE']
-              const filterVal3 = ['index', 'date1', 'date2', 'lon', 'lat']
+              const filterVal3 = ['index', 'date1', 'date2', 'lat', 'lon']
               const localLogListArr = DATA
               const resultArr = []
               for (const i in localLogListArr) {
