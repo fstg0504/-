@@ -255,8 +255,8 @@
       handleDownload() {
         require.ensure([], () => {
           const { export_json_to_excel } = require('vendor/Export2Excel')
-          const tHeader = ['序号', '用户ID', '是否指定人群', '基本信息填写时间', '提交接触日志时间', '参与者ID', '定位开始时间', '定位结束时间']
-          const filterVal = ['index', 'id', 'crowd', 'registertime', 'touchlog', 'actorid', 'locationstarttime', 'locationendtime']
+          const tHeader = ['序号', '用户ID', '是否指定人群', '设备信息', '基本信息填写时间', '接触日志开始时间', '提交接触日志时间', '参与者ID', '定位开始时间', '定位结束时间']
+          const filterVal = ['index', 'id', 'crowd', 'equipmentinfo', 'registertime', 'touchlog', 'sublogtime', 'actorid', 'locationstarttime', 'locationendtime']
           const listArr = this.list.concat()
           const resultArr = []
           for (const i in listArr) {
@@ -265,6 +265,7 @@
               index: Number(i) + 1,
               id: node.id,
               crowd: Number(node.crowd) === 1 ? '是' : '否',
+              equipmentinfo: node.equipmentinfo,
               registertime: node.registertime,
               touchlog: node.touchlog,
               actorid: node.actorid,
@@ -473,6 +474,7 @@
                   break
                 }
                 case 4: {
+                  node.answer = node.answer || ''
                   if (node.answer.indexOf('其他') > -1) {
                     result.workType = '其他'
                     result.otherWorkType = node.answer.split(':')[1] || ''
@@ -487,14 +489,14 @@
                     result.education = '其他'
                     result.otherEducation = node.answer.split(':')[1] || ''
                   } else {
-                    result.education = node.answer
+                    result.education = node.answer || ''
                     result.otherEducation = ''
                   }
                   break
                 }
                 case 6: {
-                  result.incomeType = node.answer.type
-                  result.income = node.answer.scope
+                  result.incomeType = node.answer.type || ''
+                  result.income = node.answer.scope || ''
                   break
                 }
                 case 7: {
@@ -502,6 +504,7 @@
                   break
                 }
                 case 8: {
+                  node.answer.type = node.answer.type || ''
                   if (node.answer.type.indexOf('其他') > -1) {
                     result.LivingType = '其他'
                     result.otherType = node.answer.type.split(':')[1] || ''
@@ -516,11 +519,16 @@
                   node.answer.forEach((item, index) => {
                     result[`LivingAge${index + 1}`] = item.age
                     result[`LivingSex${index + 1}`] = item.sex
-                    if (item.relation.indexOf('其他') > -1) {
-                      result[`LivingRelation${index + 1}`] = '其他'
-                      result[`otherRelation${index + 1}`] = item.relation.split(':')[item.relation.split(':').length - 1] || ''
+                    if (item.relation) {
+                      if (item.relation.indexOf('其他') > -1) {
+                        result[`LivingRelation${index + 1}`] = '其他'
+                        result[`otherRelation${index + 1}`] = item.relation.split(':')[item.relation.split(':').length - 1] || ''
+                      } else {
+                        result[`LivingRelation${index + 1}`] = item.relation
+                        result[`otherRelation${index + 1}`] = ''
+                      }
                     } else {
-                      result[`LivingRelation${index + 1}`] = item.relation
+                      result[`LivingRelation${index + 1}`] = ''
                       result[`otherRelation${index + 1}`] = ''
                     }
                   })
@@ -560,23 +568,23 @@
                   node.answer.forEach((item, index) => {
                     switch (item.scope) {
                       case '村以外': {
-                        result.villageHZ2 = item.hz
+                        result.villageHZ2 = item.hz || ''
                         break
                       }
                       case '街道/乡镇以外': {
-                        result.streetHZ2 = item.hz
+                        result.streetHZ2 = item.hz || ''
                         break
                       }
                       case '区/县以外': {
-                        result.zoneHZ2 = item.hz
+                        result.zoneHZ2 = item.hz || ''
                         break
                       }
                       case '省/市以外': {
-                        result.provincesH2 = item.hz
+                        result.provincesH2 = item.hz || ''
                         break
                       }
                       case '国外': {
-                        result.abroadHZ2 = item.hz
+                        result.abroadHZ2 = item.hz || ''
                         break
                       }
                       default:
@@ -591,8 +599,8 @@
                   break
                 }
                 case 13: {
-                  result.healthyState = node.answer.grade
-                  result.stateReason = node.answer.reson
+                  result.healthyState = node.answer.grade || ''
+                  result.stateReason = node.answer.reson || ''
                   break
                 }
                 case 14: {
@@ -627,28 +635,28 @@
                 }
                 case 3: {
                   node.answer.forEach((item, i) => {
-                    result[`ProfContactAge${Number(i) + 1}`] = item.age
+                    result[`ProfContactAge${Number(i) + 1}`] = item.age || ''
                   })
                   break
                 }
                 case 4: {
                   node.answer.forEach((item, i) => {
-                    result[`ContactTime${Number(i) + 1}`] = item.cTime
-                    result[`ContactAge${Number(i) + 1}`] = item.age
-                    result[`ContactSex${Number(i) + 1}`] = item.sex
-                    result[`ContactRelation${Number(i) + 1}`] = item.relation
-                    result[`ContactType${Number(i) + 1}`] = item.contactType
-                    result[`ContactTotalTime${Number(i) + 1}`] = item.age
-                    result[`ContactLocation${Number(i) + 1}`] = item.contactLocation
-                    result[`ContactHZ${Number(i) + 1}`] = item.contactHz
-                    result[`SubmitTime${Number(i) + 1}`] = parseTime(item.submitTime, '{y}-{m}-{d} {h}:{i}')
+                    result[`ContactTime${Number(i) + 1}`] = item.cTime || ''
+                    result[`ContactAge${Number(i) + 1}`] = item.age || ''
+                    result[`ContactSex${Number(i) + 1}`] = item.sex || ''
+                    result[`ContactRelation${Number(i) + 1}`] = item.relation || ''
+                    result[`ContactType${Number(i) + 1}`] = item.contactType || ''
+                    result[`ContactTotalTime${Number(i) + 1}`] = item.age || ''
+                    result[`ContactLocation${Number(i) + 1}`] = item.contactLocation || ''
+                    result[`ContactHZ${Number(i) + 1}`] = item.contactHz || ''
+                    result[`SubmitTime${Number(i) + 1}`] = parseTime(item.submitTime, '{y}-{m}-{d} {h}:{i}') || ''
                   })
                   break
                 }
                 case 5: {
                   if (node.answer.index === 1) {
                     result.allContacts = '否'
-                    result.missingNum = node.answer.num
+                    result.missingNum = node.answer.num || ''
                   } else {
                     result.allContacts = '是'
                     result.missingNum = ''
@@ -665,8 +673,8 @@
                 }
                 case 8: {
                   node.answer.forEach((item, i) => {
-                    result[`animal${Number(i) + 1}`] = item.type
-                    result[`animalNum${Number(i) + 1}`] = item.num
+                    result[`animal${Number(i) + 1}`] = item.type || ''
+                    result[`animalNum${Number(i) + 1}`] = item.num || ''
                     result.OtherAnimal = '否'
                     result.OtherAnimalName = ''
                     result.OtherAnimalNum = ''
@@ -677,15 +685,15 @@
                   if (someResult) {
                     const index = getIndexInArrayByObject(node.answer, { type: '其他' })[0]
                     result.OtherAnimal = '是'
-                    result.OtherAnimalName = node.answer[index].type
-                    result.OtherAnimalNum = node.answer[index].num
+                    result.OtherAnimalName = node.answer[index].type || ''
+                    result.OtherAnimalNum = node.answer[index].num || ''
                   }
                   break
                 }
                 case 9: {
                   node.answer.forEach((item, i) => {
-                    result[`DailyContactAnimal${Number(i) + 1}`] = item.type
-                    result[`DailyContactAnimalHZ${Number(i) + 1}`] = item.hz
+                    result[`DailyContactAnimal${Number(i) + 1}`] = item.type || ''
+                    result[`DailyContactAnimalHZ${Number(i) + 1}`] = item.hz || ''
                     result.DailyContactOtherAnimal = '是'
                     result.DailyContactOtherAnimalName = ''
                     result.DailyContactOtherAnimalHZ = ''
@@ -696,8 +704,8 @@
                   if (someResult) {
                     const index = getIndexInArrayByObject(node.answer, { type: '其他' })[0]
                     result.DailyContactOtherAnimal = '是'
-                    result.DailyContactOtherAnimalName = node.answer[index].type
-                    result.DailyContactOtherAnimalHZ = node.answer[index].hz
+                    result.DailyContactOtherAnimalName = node.answer[index].type || ''
+                    result.DailyContactOtherAnimalHZ = node.answer[index].hz || ''
                   }
                   break
                 }
@@ -707,10 +715,10 @@
                 }
                 case 11: {
                   node.answer.forEach((item, i) => {
-                    result[`ContactAnimalSpecies${Number(i) + 1}`] = item.type
-                    result[`ContactNumberOfAnimals${Number(i) + 1}`] = item.num
-                    result[`ContactAnimalTime${Number(i) + 1}`] = item.contacttime
-                    result[`ContactAnimalLocation${Number(i) + 1}`] = item.contactLocation
+                    result[`ContactAnimalSpecies${Number(i) + 1}`] = item.type || ''
+                    result[`ContactNumberOfAnimals${Number(i) + 1}`] = item.num || ''
+                    result[`ContactAnimalTime${Number(i) + 1}`] = item.contacttime || ''
+                    result[`ContactAnimalLocation${Number(i) + 1}`] = item.contactLocation || ''
                     result[`ContactAnimalHZ${Number(i) + 1}`] = item.hz || ''
                   })
                   break
