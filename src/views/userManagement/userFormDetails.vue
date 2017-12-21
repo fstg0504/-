@@ -87,7 +87,7 @@
                   <span>{{scope.row.answer}}</span>
                 </template>
                 <template v-if="scope.row.id==3">
-                    <span v-for="item in scope.row.answer">{{item}}；</span>
+                    <span v-for="item in scope.row.answer">{{item.age}}；</span>
                 </template>
                 <template v-if="scope.row.id==4">
                   <p v-for="item in scope.row.answer">
@@ -103,8 +103,8 @@
                   </p>
                 </template>
                 <template v-if="scope.row.id==5">
-                  <span v-if="scope.row.answer.state=='是'">{{scope.row.answer.num}}:</span>
-                  <span v-else>估计遗漏数量：{{scope.row.answer.num}}；</span>
+                  <span v-if="scope.row.answer.state=='是' || scope.row.answer.state=='Yes'">是</span>
+                  <span v-else>{{scope.row.answer.state}}；估计遗漏数量：{{scope.row.answer.num}}；</span>
                 </template>
                 <template v-if="scope.row.id==8">
                   <p v-for="item in scope.row.answer">
@@ -126,6 +126,7 @@
                     <span>数量：{{item.num}}；</span>
                     <span>接触时间：{{item.contacttime}}；</span>
                     <span>接触地点：{{item.contactLocation}}；</span>
+                    <span>接触频率：{{item.contactHz}}；</span>
                   </p>
                 </template>
               </template>

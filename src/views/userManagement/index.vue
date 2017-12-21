@@ -361,10 +361,10 @@
             { tHeader: '专业接触年龄5', filterVal: 'ProfContactAge5' },
             { tHeader: '专业接触年龄不知道', filterVal: 'ProfContactAgeUnknown' },
 //            这里有插入
-            { tHeader: '是否包含所有接触', filterVal: ' allContacts' },
-            { tHeader: '遗漏人数', filterVal: ' missingNum' },
+            { tHeader: '是否包含所有接触', filterVal: 'allContacts' },
+            { tHeader: '遗漏人数', filterVal: 'missingNum' },
             { tHeader: '接触人记录准确性', filterVal: 'ContactAccuracy' },
-            { tHeader: '是否喂养动物', filterVal: ' feedAnimals' },
+            { tHeader: '是否喂养动物', filterVal: 'feedAnimals' },
 //            { tHeader: '动物1', filterVal: 'animal1' },
 //            { tHeader: '数量1', filterVal: 'animalNum1' },
             { tHeader: '其它动物', filterVal: 'OtherAnimal' },
@@ -385,7 +385,7 @@
             { tHeader: '建议', filterVal: 'suggest' },
           ]
           const allContacts = []
-          const allContactsIndex = getIndexInArrayByObject(rowOpt, { tHeader: '是否包含所有接触', filterVal: ' allContacts' })
+          const allContactsIndex = getIndexInArrayByObject(rowOpt, { tHeader: '是否包含所有接触', filterVal: 'allContacts' })
           for (let i = 0; i < 40; i++) {
             allContacts.push({ tHeader: `接触时间${Number(i) + 1}`, filterVal: `ContactTime${Number(i) + 1}` })
             allContacts.push({ tHeader: `接触者年龄${Number(i) + 1}`, filterVal: `ContactAge${Number(i) + 1}` })
@@ -735,18 +735,22 @@
                 }
                 case 3: {
                   node.answer.forEach((item, i) => {
-                    result[`ProfContactAge${Number(i) + 1}`] = item.age || ''
+                    if (item.index === 5) {
+                      result[`ProfContactAgeUnknown`] = item.age
+                    } else {
+                      result[`ProfContactAge${item.index + 1}`] = item.age
+                    }
                   })
                   break
                 }
                 case 4: {
                   node.answer.forEach((item, i) => {
                     result[`ContactTime${Number(i) + 1}`] = item.cTime || ''
-                    result[`ContactAge${Number(i) + 1}`] = item.age || ''
+                    result[`ContactAge${Number(i) + 1}`] = item.age
                     result[`ContactSex${Number(i) + 1}`] = item.sex || ''
                     result[`ContactRelation${Number(i) + 1}`] = item.relation || ''
                     result[`ContactType${Number(i) + 1}`] = item.contactType || ''
-                    result[`ContactTotalTime${Number(i) + 1}`] = item.age || ''
+                    result[`ContactTotalTime${Number(i) + 1}`] = item.contacttime ? item.contacttime.replace('&gt;', '>') || '' : ''
                     result[`ContactLocation${Number(i) + 1}`] = item.contactLocation || ''
                     result[`ContactHZ${Number(i) + 1}`] = item.contactHz || ''
                     result[`SubmitTime${Number(i) + 1}`] = parseTime(item.submitTime, '{y}-{m}-{d} {h}:{i}') || ''
@@ -773,40 +777,30 @@
                 }
                 case 8: {
                   node.answer.forEach((item, i) => {
-                    result[`animal${Number(i) + 1}`] = item.type || ''
-                    result[`animalNum${Number(i) + 1}`] = item.num || ''
-                    result.OtherAnimal = '否'
-                    result.OtherAnimalName = ''
-                    result.OtherAnimalNum = ''
+                    if (item.type === '其他' || item.type === 'Others') {
+                      result.OtherAnimal = '是'
+                      result.OtherAnimalName = item.name || ''
+                      result.OtherAnimalNum = item.num || ''
+                    } else {
+                      result[`animal${Number(i) + 1}`] = item.type || ''
+                      result[`animalNum${Number(i) + 1}`] = item.num || ''
+                      result.OtherAnimal = ''
+                    }
                   })
-                  const someResult = node.answer.some((item) => {
-                    return (item.type === '其他')
-                  })
-                  if (someResult) {
-                    const index = getIndexInArrayByObject(node.answer, { type: '其他' })[0]
-                    result.OtherAnimal = '是'
-                    result.OtherAnimalName = node.answer[index].type || ''
-                    result.OtherAnimalNum = node.answer[index].num || ''
-                  }
                   break
                 }
                 case 9: {
                   node.answer.forEach((item, i) => {
-                    result[`DailyContactAnimal${Number(i) + 1}`] = item.type || ''
-                    result[`DailyContactAnimalHZ${Number(i) + 1}`] = item.hz || ''
-                    result.DailyContactOtherAnimal = '是'
-                    result.DailyContactOtherAnimalName = ''
-                    result.DailyContactOtherAnimalHZ = ''
+                    if (item.type === '其他' || item.type === 'Others') {
+                      result.DailyContactOtherAnimal = '是'
+                      result.DailyContactOtherAnimalName = item.name || ''
+                      result.DailyContactOtherAnimalHZ = item.hz || ''
+                    } else {
+                      result[`DailyContactAnimal${Number(i) + 1}`] = item.type || ''
+                      result[`DailyContactAnimalHZ${Number(i) + 1}`] = item.hz || ''
+                      result.DailyContactOtherAnimal = ''
+                    }
                   })
-                  const someResult = node.answer.some((item) => {
-                    return (item.type === '其他')
-                  })
-                  if (someResult) {
-                    const index = getIndexInArrayByObject(node.answer, { type: '其他' })[0]
-                    result.DailyContactOtherAnimal = '是'
-                    result.DailyContactOtherAnimalName = node.answer[index].type || ''
-                    result.DailyContactOtherAnimalHZ = node.answer[index].hz || ''
-                  }
                   break
                 }
                 case 10: {
@@ -819,7 +813,7 @@
                     result[`ContactNumberOfAnimals${Number(i) + 1}`] = item.num || ''
                     result[`ContactAnimalTime${Number(i) + 1}`] = item.contacttime || ''
                     result[`ContactAnimalLocation${Number(i) + 1}`] = item.contactLocation || ''
-                    result[`ContactAnimalHZ${Number(i) + 1}`] = item.hz || ''
+                    result[`ContactAnimalHZ${Number(i) + 1}`] = item.contactHz || ''
                   })
                   break
                 }
