@@ -282,6 +282,7 @@
           const { export_json_to_excel } = require('vendor/Export2Excel')
           const rowOpt = [
             { tHeader: '序号', filterVal: 'index' },
+            { tHeader: 'ID', filterVal: 'userID' },
             { tHeader: '参与者ID', filterVal: 'actorid' },
             { tHeader: '年龄', filterVal: 'age' },
             { tHeader: '性别', filterVal: 'sex' },
@@ -459,10 +460,11 @@
             const result = {}
             item.forEach((node, j) => {
               result.index = Number(i) + 1
+              result.userID = IDArr[i]
               result.actorid = actoridArr[i]
               switch (node.id) {
                 case 1: {
-                  result.age = node.answer || ''
+                  result.age = node.answer
                   break
                 }
                 case 2: {
@@ -536,60 +538,158 @@
                 }
                 case 10: {
                   node.answer.forEach((item, index) => {
-                    switch (item.scope) {
-                      case '村以外': {
-                        result.villageHZ1 = item.hz
-                        break
+                    item.scope = item.scope.replace('\\', '')
+                    if (item.scopeIndex || Number(item.scopeIndex) === 0) {
+                      switch (Number(item.scopeIndex)) {
+                        case 0: {
+                          result.villageHZ1 = item.hz
+                          break
+                        }
+                        case 1: {
+                          result.streetHZ1 = item.hz
+                          break
+                        }
+                        case 2: {
+                          result.zoneHZ1 = item.hz
+                          break
+                        }
+                        case 3: {
+                          result.provincesHZ1 = item.hz
+                          break
+                        }
+                        case 4: {
+                          result.abroadHZ1 = item.hz
+                          break
+                        }
+                        default:
+                          this.$message({ message: `id为10的{scope:${item.scope}}数据格式不对，可能会影响Excel的下载`, type: 'warning' })
+                          console.log(`用户id为${IDArr[i]}，题目id为10的{scope:${item.scope}}数据格式不对，可能会影响Excel的下载`)
                       }
-                      case '街道/乡镇以外': {
-                        result.streetHZ1 = item.hz
-                        break
+                    } else {
+                      switch (item.scope) {
+                        case '村以外': {
+                          result.villageHZ1 = item.hz
+                          break
+                        }
+                        case '街道/乡镇以外': {
+                          result.streetHZ1 = item.hz
+                          break
+                        }
+                        case '区/县以外': {
+                          result.zoneHZ1 = item.hz
+                          break
+                        }
+                        case '省/市以外': {
+                          result.provincesHZ1 = item.hz
+                          break
+                        }
+                        case '国外': {
+                          result.abroadHZ1 = item.hz
+                          break
+                        }
+                        case 'Outside Village': {
+                          result.villageHZ1 = item.hz
+                          break
+                        }
+                        case 'Outside Town': {
+                          result.streetHZ1 = item.hz
+                          break
+                        }
+                        case 'Outside District/County': {
+                          result.zoneHZ1 = item.hz
+                          break
+                        }
+                        case 'Outside City/Province': {
+                          result.provincesHZ1 = item.hz
+                          break
+                        }
+                        case 'Abroad': {
+                          result.abroadHZ1 = item.hz
+                          break
+                        }
+                        default:
+                          this.$message({ message: `id为10的{scope:${item.scope}}数据格式不对，可能会影响Excel的下载`, type: 'warning' })
+                          console.log(`用户id为${IDArr[i]}，题目id为10的{scope:${item.scope}}数据格式不对，可能会影响Excel的下载`)
                       }
-                      case '区/县以外': {
-                        result.zoneHZ1 = item.hz
-                        break
-                      }
-                      case '省/市以外': {
-                        result.provincesH1 = item.hz
-                        break
-                      }
-                      case '国外': {
-                        result.abroadHZ1 = item.hz
-                        break
-                      }
-                      default:
-                        this.$message({ message: `id为10的scope数据格式不对，可能会影响Excel的下载`, type: 'warning' })
-                        console.log(`用户id为${IDArr[i]}，题目id为10的scope数据格式不对，可能会影响Excel的下载`)
                     }
                   })
                   break
                 }
                 case 11: {
                   node.answer.forEach((item, index) => {
-                    switch (item.scope) {
-                      case '村以外': {
-                        result.villageHZ2 = item.hz || ''
-                        break
+                    item.scope = item.scope.replace('\\', '')
+                    if (item.scopeIndex || Number(item.scopeIndex) === 0) {
+                      switch (Number(item.scopeIndex)) {
+                        case 0: {
+                          result.villageHZ2 = item.hz || ''
+                          break
+                        }
+                        case 1: {
+                          result.streetHZ2 = item.hz || ''
+                          break
+                        }
+                        case 2: {
+                          result.zoneHZ2 = item.hz || ''
+                          break
+                        }
+                        case 3: {
+                          result.provincesHZ2 = item.hz || ''
+                          break
+                        }
+                        case 4: {
+                          result.abroadHZ2 = item.hz || ''
+                          break
+                        }
+                        default:
+                          this.$message({ message: `id为11的{scope:${item.scope}}数据格式不对，可能会影响Excel的下载`, type: 'warning' })
+                          console.log(`用户id为${IDArr[i]}，题目id为11的{scope:${item.scope}}数据格式不对，可能会影响Excel的下载`)
                       }
-                      case '街道/乡镇以外': {
-                        result.streetHZ2 = item.hz || ''
-                        break
+                    } else {
+                      switch (item.scope) {
+                        case '村以外': {
+                          result.villageHZ2 = item.hz || ''
+                          break
+                        }
+                        case 'Outside Village': {
+                          result.villageHZ2 = item.hz || ''
+                          break
+                        }
+                        case '街道/乡镇以外': {
+                          result.streetHZ2 = item.hz || ''
+                          break
+                        }
+                        case 'Outside Town': {
+                          result.streetHZ2 = item.hz || ''
+                          break
+                        }
+                        case '区/县以外': {
+                          result.zoneHZ2 = item.hz || ''
+                          break
+                        }
+                        case 'Outside District/County': {
+                          result.zoneHZ2 = item.hz || ''
+                          break
+                        }
+                        case '省/市以外': {
+                          result.provincesHZ2 = item.hz || ''
+                          break
+                        }
+                        case 'Outside City/Province': {
+                          result.provincesHZ2 = item.hz || ''
+                          break
+                        }
+                        case '国外': {
+                          result.abroadHZ2 = item.hz || ''
+                          break
+                        }
+                        case 'Abroad': {
+                          result.abroadHZ2 = item.hz || ''
+                          break
+                        }
+                        default:
+                          this.$message({ message: `id为11的{scope:${item.scope}}数据格式不对，可能会影响Excel的下载`, type: 'warning' })
+                          console.log(`用户id为${IDArr[i]}，题目id为11的{scope:${item.scope}}数据格式不对，可能会影响Excel的下载`)
                       }
-                      case '区/县以外': {
-                        result.zoneHZ2 = item.hz || ''
-                        break
-                      }
-                      case '省/市以外': {
-                        result.provincesH2 = item.hz || ''
-                        break
-                      }
-                      case '国外': {
-                        result.abroadHZ2 = item.hz || ''
-                        break
-                      }
-                      default:
-                        this.$message({ message: `id为11的scope数据格式不对，可能会影响Excel的下载`, type: 'warning' })
-                        console.log(`用户id为${IDArr[i]}，题目id为11的scope数据格式不对，可能会影响Excel的下载`)
                     }
                   })
                   break
