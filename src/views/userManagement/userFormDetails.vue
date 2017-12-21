@@ -210,6 +210,7 @@
         activeName: 'first',
         listQuery: {
           phoneid: undefined,
+          id: undefined,
           start: 0,
           length: 10,
         },
@@ -257,7 +258,8 @@
         const userInfoForm = JSON.parse(sessionStorage.getItem('userInfoForm'))
         this.userInfoForm = userInfoForm
         this.userInfoFormId = userInfoForm.id
-        this.listQuery.phoneid = userInfoForm.equipmentinfo
+        this.listQuery.phoneid = userInfoForm.phoneinfo
+        this.listQuery.id = userInfoForm.id
         this.getAnswer()
         this.getLocation()
       } else {

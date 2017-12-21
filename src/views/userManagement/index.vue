@@ -80,7 +80,7 @@
       </el-table-column>
       <el-table-column align="left" label="设备信息" width="120">
         <template scope="scope">
-          <span>{{scope.row.equipmentinfo}}</span>
+          <span>{{scope.row.phoneinfo}}</span>
         </template>
       </el-table-column>
       <el-table-column align="center" :label="$t('userManagement.basicInfoTime')" >
@@ -256,7 +256,7 @@
         require.ensure([], () => {
           const { export_json_to_excel } = require('vendor/Export2Excel')
           const tHeader = ['序号', '用户ID', '是否指定人群', '设备信息', '基本信息填写时间', '接触日志开始时间', '提交接触日志时间', '参与者ID', '定位开始时间', '定位结束时间']
-          const filterVal = ['index', 'id', 'crowd', 'equipmentinfo', 'registertime', 'touchlog', 'sublogtime', 'actorid', 'locationstarttime', 'locationendtime']
+          const filterVal = ['index', 'id', 'crowd', 'phoneinfo', 'registertime', 'touchlog', 'sublogtime', 'actorid', 'locationstarttime', 'locationendtime']
           const listArr = this.list.concat()
           const resultArr = []
           for (const i in listArr) {
@@ -265,7 +265,7 @@
               index: Number(i) + 1,
               id: node.id,
               crowd: Number(node.crowd) === 1 ? '是' : '否',
-              equipmentinfo: node.equipmentinfo,
+              phoneinfo: node.phoneinfo,
               registertime: node.registertime,
               touchlog: node.touchlog,
               actorid: node.actorid,
@@ -863,7 +863,7 @@
           }
           case 3: {
             Promise.all(this.list.map((item) => {
-              return this.$http.get('/getLocalLog', { params: { phoneid: item.equipmentinfo, start: 0 }})
+              return this.$http.get('/getLocalLog', { params: { phoneid: item.phoneinfo, id: item.id, start: 0 }})
             })).then((res) => {
               for (const i in res) {
                 const node = res[i]
