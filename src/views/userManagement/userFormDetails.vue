@@ -161,12 +161,12 @@
             </el-table-column>
             <el-table-column align="center" label="LATITUDE">
               <template scope="scope">
-                <span>{{scope.row.locationlog.lat}}</span>
+                <span>{{scope.row.locationlog.lat.toFixed(6)}}</span>
               </template>
             </el-table-column>
             <el-table-column align="center" label="LONGITUDE">
               <template scope="scope">
-                <span>{{scope.row.locationlog.lon}}</span>
+                <span>{{scope.row.locationlog.lon.toFixed(6)}}</span>
               </template>
             </el-table-column>
           </el-table>
@@ -367,32 +367,32 @@
                       break
                     }
                     case 8: {
-                      answerStr = `同住人数：${answer.num}；\r\n同住类型：${answer.type}`
+                      answerStr = `同住人数：${answer.num || ''}；\r\n同住类型：${answer.type || ''}`
                       break
                     }
                     case 9: {
                       for (const i in answer) {
                         const node = answer[i]
-                        answerStr += `年龄：${node.age}；性别：${node.sex}; 关系：${node.relation}\r\n`
+                        answerStr += `年龄：${node.age || ''}；性别：${node.sex || ''}; 关系：${node.relation || ''}\r\n`
                       }
                       break
                     }
                     case 10: {
                       for (const i in answer) {
                         const node = answer[i]
-                        answerStr += `范围：${node.scope}；频率：${node.hz}\r\n`
+                        answerStr += `范围：${node.scope || ''}；频率：${node.hz || ''}\r\n`
                       }
                       break
                     }
                     case 11: {
                       for (const i in answer) {
                         const node = answer[i]
-                        answerStr += `范围：${node.scope}；频率：${node.hz}\r\n`
+                        answerStr += `范围：${node.scope || ''}；频率：${node.hz || ''}\r\n`
                       }
                       break
                     }
                     case 13: {
-                      answerStr = `分数：${answer.grade}；\r\n 理由：${answer.reson}`
+                      answerStr = `分数：${answer.grade || 0}；\r\n 理由：${answer.reson || ''}`
                       break
                     }
                     default:
@@ -423,21 +423,28 @@
                 let answerStr = ''
                 if (answer) {
                   switch (id) {
+                    case 3: {
+                      for (const i in answer) {
+                        const node = answer[i]
+                        answerStr += `${node.age}；\r\n`
+                      }
+                      break
+                    }
                     case 4:
                       for (const i in answer) {
                         const node = answer[i]
-                        answerStr += `年龄：${node.age}；性别：${node.sex}；接触时间：${node.cTime}；关系：${node.relation}；接触类型：${node.contactType}；总时间：${node.contacttime}；接触地点：${node.contactLocation}；平时的接触频率:${node.contactHz}；提交时间:${parseTime(node.submitTime)}；\r\n`
+                        answerStr += `年龄：${node.age || ''}；性别：${node.sex || ''}；接触时间：${node.cTime || ''}；关系：${node.relation || ''}；接触类型：${node.contactType || ''}；总时间：${node.contacttime || ''}；接触地点：${node.contactLocation || ''}；平时的接触频率:${node.contactHz || ''}；提交时间:${parseTime(node.submitTime || '')}；\r\n`
                       }
                       break
                     case 5:
-                      if (answer.state === '是') {
-                        answerStr = answer.num
+                      if (answer.index === 0) {
+                        answerStr = answer.state || ''
                       } else {
-                        answerStr = `没有；估计遗漏数量：${answer.num}`
+                        answerStr = `没有；估计遗漏数量：${answer.num || ''}`
                       }
                       break
                     case 8:
-                      answerStr = `种类：${answer.type}；数量：${answer.num}`
+                      answerStr = `种类：${answer.type || ''}；数量：${answer.num || ''}`
                       break
                     case 9:
                       for (const i in answer) {
@@ -448,7 +455,7 @@
                     case 11:
                       for (const i in answer) {
                         const node = answer[i]
-                        answerStr += `动物种类：${node.type}；数量：${node.num}；接触时间：${node.contacttime}；接触地点：${node.contactLocation}；\r\n`
+                        answerStr += `动物种类：${node.type || ''}；数量：${node.num || ''}；接触时间：${node.contacttime || ''}；接触地点：${node.contactLocation || ''}；\r\n`
                       }
                       break
                     default:
@@ -479,8 +486,8 @@
                   index: Number(i) + 1,
                   date1: node.nowtime ? this.fomentDateYMD(node.nowtime) : `无`,
                   date2: node.nowtime ? this.fomentDateHIS(node.nowtime) : `无`,
-                  lat: node.locationlog.lat,
-                  lon: node.locationlog.lon,
+                  lat: node.locationlog.lat.toFixed(6),
+                  lon: node.locationlog.lon.toFixed(6),
                 })
               }
               const data3 = this.formatJson(filterVal3, resultArr)
