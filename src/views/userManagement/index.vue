@@ -722,8 +722,6 @@
             const item = answerlogArr[i]
             const result = {}
             item.forEach((node, j) => {
-              result.index = Number(i) + 1
-              result.actorid = IDArr[i]
               switch (node.id) {
                 case 1: {
                   result.ProfContact = node.answer || ''
