@@ -96,7 +96,7 @@
                     <span>接触时间：{{item.cTime}}；</span>
                     <span :index="item.relationIndex">关系：{{item.relation}}；</span>
                     <span>接触类型：{{item.contactType}}；</span>
-                    <span v-html="'总时间：'+item.contacttime+'；'"></span>
+                    <span v-html="'总时间：'+item.contacttime?item.contacttime: ''+'；'"></span>
                     <span>接触地点：{{item.contactLocation}}；</span>
                     <span>平时的接触频率：{{item.contactHz}}；</span>
                     <span>提交时间：{{item.submitTime | parseTime('{y}-{m}-{d} {h}:{i}:{s}')}}；</span>
@@ -367,13 +367,13 @@
                       break
                     }
                     case 8: {
-                      answerStr = `同住人数：${answer.num || ''}；\r\n同住类型：${answer.type || ''}`
+                      answerStr = `同住人数：${answer.num ? answer.num : answer.num === 0 ? 0 : ''}；\r\n同住类型：${answer.type || ''}`
                       break
                     }
                     case 9: {
                       for (const i in answer) {
                         const node = answer[i]
-                        answerStr += `年龄：${node.age || ''}；性别：${node.sex || ''}; 关系：${node.relation || ''}\r\n`
+                        answerStr += `年龄：${node.age ? node.age : node.age === 0 ? 0 : ''}；性别：${node.sex || ''}; 关系：${node.relation || ''}\r\n`
                       }
                       break
                     }
@@ -433,7 +433,7 @@
                     case 4:
                       for (const i in answer) {
                         const node = answer[i]
-                        answerStr += `年龄：${node.age || ''}；性别：${node.sex || ''}；接触时间：${node.cTime || ''}；关系：${node.relation || ''}；接触类型：${node.contactType || ''}；总时间：${node.contacttime || ''}；接触地点：${node.contactLocation || ''}；平时的接触频率:${node.contactHz || ''}；提交时间:${parseTime(node.submitTime || '')}；\r\n`
+                        answerStr += `年龄：${node.age ? node.age : node.age === 0 ? 0 : ''}；性别：${node.sex || ''}；接触时间：${node.cTime || ''}；关系：${node.relation || ''}；接触类型：${node.contactType || ''}；总时间：${node.contacttime || ''}；接触地点：${node.contactLocation || ''}；平时的接触频率:${node.contactHz || ''}；提交时间:${parseTime(node.submitTime || '')}；\r\n`
                       }
                       break
                     case 5:
@@ -449,7 +449,7 @@
                     case 9:
                       for (const i in answer) {
                         const node = answer[i]
-                        answerStr += `种类：${node.type}；频率：${node.hz}\r\n`
+                        answerStr += `种类：${node.type || ''}；频率：${node.hz || ''}\r\n`
                       }
                       break
                     case 11:

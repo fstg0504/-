@@ -744,7 +744,7 @@
                 case 4: {
                   node.answer.forEach((item, i) => {
                     result[`ContactTime${Number(i) + 1}`] = item.cTime || ''
-                    result[`ContactAge${Number(i) + 1}`] = item.age
+                    result[`ContactAge${Number(i) + 1}`] = (item.age || item.age === 0) ? item.age : ''
                     result[`ContactSex${Number(i) + 1}`] = item.sex || ''
                     result[`ContactRelation${Number(i) + 1}`] = item.relation || ''
                     result[`ContactType${Number(i) + 1}`] = item.contactType || ''
@@ -891,36 +891,36 @@
                 if (answer) {
                   switch (id) {
                     case 6: {
-                      answerStr = `${answer.type}:${answer.scope}`
+                      answerStr = `${answer.type || ''}:${answer.scope || ''}`
                       break
                     }
                     case 8: {
-                      answerStr = `同住人数：${answer.num}；\r\n同住类型：${answer.type}`
+                      answerStr = `同住人数：${(answer.num || answer.num === 0) ? answer.num : ''}；\r\n同住类型：${answer.type || ''}`
                       break
                     }
                     case 9: {
                       for (const i in answer) {
                         const node = answer[i]
-                        answerStr += `年龄：${node.age}；性别：${node.sex}; 关系：${node.relation}\r\n`
+                        answerStr += `年龄：${(node.age || node.age === 0) ? node.age : ''}；性别：${node.sex || ''}; 关系：${node.relation || ''}\r\n`
                       }
                       break
                     }
                     case 10: {
                       for (const i in answer) {
                         const node = answer[i]
-                        answerStr += `范围：${node.scope}；频率：${node.hz}\r\n`
+                        answerStr += `范围：${node.scope || ''}；频率：${node.hz || ''}\r\n`
                       }
                       break
                     }
                     case 11: {
                       for (const i in answer) {
                         const node = answer[i]
-                        answerStr += `范围：${node.scope}；频率：${node.hz}\r\n`
+                        answerStr += `范围：${node.scope || ''}；频率：${node.hz || ''}\r\n`
                       }
                       break
                     }
                     case 13: {
-                      answerStr = `分数：${answer.grade}；\r\n 理由：${answer.reson}`
+                      answerStr = `分数：${(answer.grade || answer.grade === 0) ? answer.grade : ''}；\r\n 理由：${answer.reson || ''}`
                       break
                     }
                     default:
@@ -954,29 +954,29 @@
                     case 4:
                       for (const i in answer) {
                         const node = answer[i]
-                        answerStr += `年龄：${node.age}；性别：${node.sex}；接触时间：${node.cTime}；关系：${node.relation}；接触类型：${node.contactType}；总时间：${node.contacttime}；接触地点：${node.contactLocation}；平时的接触频率:${node.contactHz}；提交时间:${node.submitTime}\r\n`
+                        answerStr += `年龄：${(node.age || node.age === 0) ? node.age : ''}；性别：${node.sex || ''}；接触时间：${node.cTime || ''}；关系：${node.relation || ''}；接触类型：${node.contactType || ''}；总时间：${node.contacttime || ''}；接触地点：${node.contactLocation || ''}；平时的接触频率:${node.contactHz || ''}；提交时间:${node.submitTime || ''}\r\n`
                       }
                       break
                     case 5:
                       if (answer.state === '是') {
-                        answerStr = node.num
+                        answerStr = node.num || ''
                       } else {
-                        answerStr = `估计遗漏数量：${node.num}`
+                        answerStr = `估计遗漏数量：${node.num || ''}`
                       }
                       break
                     case 8:
-                      answerStr = `种类：${node.type}；数量：${node.num}`
+                      answerStr = `种类：${node.type || ''}；数量：${node.num || ''}`
                       break
                     case 9:
                       for (const i in answer) {
                         const node = answer[i]
-                        answerStr += `种类：${node.type}；频率：${node.hz}\r\n`
+                        answerStr += `种类：${node.type || ''}；频率：${node.hz || ''}\r\n`
                       }
                       break
                     case 11:
                       for (const i in answer) {
                         const node = answer[i]
-                        answerStr += `动物种类：${node.type}；数量：${node.num}；接触时间：${node.contacttime}；接触地点：${node.contactLocation}；\r\n`
+                        answerStr += `动物种类：${node.type || ''}；数量：${node.num || ''}；接触时间：${node.contacttime || ''}；接触地点：${node.contactLocation || ''}；\r\n`
                       }
                       break
                     default:
