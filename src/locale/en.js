@@ -52,9 +52,6 @@ export default {
     q10: 'Where and how often do you usually have a travel?',
     q11: 'Where and how often do you and your housemate usually have a travel together (at least two persons)?',
     q12: 'Where and how often do you usually have a travel?',
-    q13: 'Is today a regular day or holiday for you?',
-    q14: 'Today’s weather?',
-    q15: 'Is today a regular day (have a common life pattern at least four days of a week) or irregular for you?'
   },
   basicInfoAnswer: {
     q2_1: '男',
@@ -146,14 +143,17 @@ export default {
     q3: 'Please tick in which of these age categories these professional contacts mostly occur (multiple options possible):',
     q4: 'Detailed contact information',
     q5: 'Have you included all contacts?',
-    q6: 'How well do you recall Your contacts?\n',
+    q6: 'How well do you recall Your contacts?',
     q7: 'Do you own some animals?',
     q8: 'Please provide the details on the animals you own.',
     q9: 'How often do you usually touch these live animals below?',
     q10: 'Have you touched any live animal on your assigned day?',
     q11: 'Please provide animal touching details by filling in the table',
     q12: 'How well do you recall your animal touching?',
-    q13: 'Did you have any problems or suggestions regarding the questionnaire?'
+    q13: 'Is today a regular day or holiday for you?',
+    q14: 'Today’s weather?',
+    q15: 'Is today a regular day (have a common life pattern at least four days of a week) or irregular for you?',
+    q16: 'Did you have any problems or suggestions regarding the questionnaire?'
   },
   utils: {
     home: 'Home',

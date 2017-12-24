@@ -348,10 +348,6 @@
             { tHeader: '省频率2', filterVal: 'provincesHZ2' },
             { tHeader: '国外频率2', filterVal: 'abroadHZ2' },
             { tHeader: '接触人数', filterVal: 'ContactNumber' },
-            { tHeader: '健康状态', filterVal: 'healthyState' },
-            { tHeader: '状态不好理由', filterVal: 'stateReason' },
-            { tHeader: '天气', filterVal: 'weather' },
-            { tHeader: '普通特殊天', filterVal: 'specialDay' },
             { tHeader: '专业接触', filterVal: 'ProfContact' },
             { tHeader: '专业接触数', filterVal: 'ProfContactNum' },
             { tHeader: '专业接触年龄1', filterVal: 'ProfContactAge1' },
@@ -382,6 +378,10 @@
 //            { tHeader: '接触动物地点1', filterVal: 'ContactAnimalLocation' },
 //            { tHeader: '接触动物频率1', filterVal: 'ContactAnimalHZ' },
             { tHeader: '动物接触记录准确性', filterVal: 'ContactAnimalAccuracy' },
+            { tHeader: '健康状态', filterVal: 'healthyState' },
+            { tHeader: '状态不好理由', filterVal: 'stateReason' },
+            { tHeader: '天气', filterVal: 'weather' },
+            { tHeader: '普通特殊天', filterVal: 'specialDay' },
             { tHeader: '建议', filterVal: 'suggest' },
           ]
           const allContacts = []
@@ -440,7 +440,7 @@
               locanswer = JSON.parse(locanswer)
               return locanswer
             } else {
-              console.log(`用户id为${IDArr[i]}，接触中日志数据格式不对，可能会影响Excel的下载`)
+              console.log(`用户id为${IDArr[i]}，基本信息数据格式不对，可能会影响Excel的下载`)
             }
           })
           const answerlogArr = this.list.map((item, i) => {
@@ -698,19 +698,6 @@
                   result.ContactNumber = node.answer || ''
                   break
                 }
-                case 13: {
-                  result.healthyState = node.answer.grade || ''
-                  result.stateReason = node.answer.reson || ''
-                  break
-                }
-                case 14: {
-                  result.weather = node.answer || ''
-                  break
-                }
-                case 15: {
-                  result.specialDay = node.answer || ''
-                  break
-                }
                 default:
                   this.$message({ message: `用户id为${IDArr[i]}的数据格式不对，可能会影响Excel的下载`, type: 'warning' })
                   console.log(`用户id为${IDArr[i]}的数据格式不对，可能会影响Excel的下载`)
@@ -820,6 +807,19 @@
                   break
                 }
                 case 13: {
+                  result.healthyState = node.answer.grade || ''
+                  result.stateReason = node.answer.reson || ''
+                  break
+                }
+                case 14: {
+                  result.weather = node.answer || ''
+                  break
+                }
+                case 15: {
+                  result.specialDay = node.answer || ''
+                  break
+                }
+                case 16: {
                   result.suggest = node.answer || ''
                   break
                 }

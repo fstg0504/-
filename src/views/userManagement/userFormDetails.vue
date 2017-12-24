@@ -24,7 +24,7 @@
             </el-table-column>
             <el-table-column align="left" :label="$t('userManagement.answer')">
               <template scope="scope">
-                <template v-if="scope.row.id==1||scope.row.id==2||scope.row.id==3||scope.row.id==4||scope.row.id==5||scope.row.id==7||scope.row.id==12||scope.row.id==14||scope.row.id==15">
+                <template v-if="scope.row.id==1||scope.row.id==2||scope.row.id==3||scope.row.id==4||scope.row.id==5||scope.row.id==7||scope.row.id==12">
                   <span>{{scope.row.answer}}</span>
                 </template>
                 <template v-if="scope.row.id==6">
@@ -54,10 +54,6 @@
                     <span>频率：{{item.hz}}</span>
                   </p>
                 </template>
-                <template v-if="scope.row.id==13">
-                  <span>分数：{{scope.row.answer.grade}}；</span>
-                  <span>理由：{{scope.row.answer.reson}}</span>
-                </template>
               </template>
             </el-table-column>
           </el-table>
@@ -83,7 +79,7 @@
             </el-table-column>
             <el-table-column align="left" :label="$t('userManagement.answer')" >
               <template scope="scope">
-                <template v-if="scope.row.id==1||scope.row.id==2||scope.row.id==6||scope.row.id==7||scope.row.id==10||scope.row.id==12||scope.row.id==13">
+                <template v-if="scope.row.id==1||scope.row.id==2||scope.row.id==6||scope.row.id==7||scope.row.id==10||scope.row.id==12||scope.row.id==14||scope.row.id==15||scope.row.id==16">
                   <span>{{scope.row.answer}}</span>
                 </template>
                 <template v-if="scope.row.id==3">
@@ -128,6 +124,10 @@
                     <span>接触地点：{{item.contactLocation}}；</span>
                     <span>接触频率：{{item.contactHz}}；</span>
                   </p>
+                </template>
+                <template v-if="scope.row.id==13">
+                  <span>分数：{{scope.row.answer.grade}}；</span>
+                  <span>理由：{{scope.row.answer.reson}}</span>
                 </template>
               </template>
             </el-table-column>
@@ -391,10 +391,6 @@
                       }
                       break
                     }
-                    case 13: {
-                      answerStr = `分数：${answer.grade || 0}；\r\n 理由：${answer.reson || ''}`
-                      break
-                    }
                     default:
                       answerStr = answer
                   }
@@ -452,12 +448,17 @@
                         answerStr += `种类：${node.type || ''}；频率：${node.hz || ''}\r\n`
                       }
                       break
-                    case 11:
+                    case 11: {
                       for (const i in answer) {
                         const node = answer[i]
                         answerStr += `动物种类：${node.type || ''}；数量：${node.num || ''}；接触时间：${node.contacttime || ''}；接触地点：${node.contactLocation || ''}；\r\n`
                       }
                       break
+                    }
+                    case 13: {
+                      answerStr = `分数：${answer.grade || 0}；\r\n 理由：${answer.reson || ''}`
+                      break
+                    }
                     default:
                       answerStr = answer
                   }
