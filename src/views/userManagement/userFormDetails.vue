@@ -149,13 +149,13 @@
             <el-table-column align="center" type="index" width="85" label="INDEX"></el-table-column>
             <el-table-column align="center" label="DATE">
               <template scope="scope">
-                <span v-if="scope.row.nowtime">{{scope.row.nowtime | fomentDateYMD}}</span>
+                <span v-if="scope.row.nowtime">{{scope.row.nowtime | filterfomentDateYMD}}</span>
                 <span v-else>无</span>
               </template>
             </el-table-column>
             <el-table-column align="center" label="TIME">
               <template scope="scope">
-                <span v-if="scope.row.nowtime">{{scope.row.nowtime | fomentDateHIS}}</span>
+                <span v-if="scope.row.nowtime">{{scope.row.nowtime | filterfomentDateHIS}}</span>
                 <span v-else>无</span>
               </template>
             </el-table-column>
@@ -217,11 +217,11 @@
         },
         tableKey1: 1,
         tableKey2: 2,
-        tableKey3: 3
+        tableKey3: 3,
       }
     },
     filters: {
-      fomentDateYMD(value) {
+      filterfomentDateYMD(value) {
         if (value) {
           const date = new Date(value)
           const formatObj = {
@@ -237,7 +237,7 @@
           return `无`
         }
       },
-      fomentDateHIS(value) {
+      filterfomentDateHIS(value) {
         if (value) {
           const date = new Date(value)
           const formatObj = {
@@ -252,7 +252,7 @@
         } else {
           return `无`
         }
-      }
+      },
     },
     created() {
       if (sessionStorage.getItem('userInfoForm')) {
@@ -303,6 +303,11 @@
               for (const i in answerlogArr) {
                 const node = answerlogArr[i]
                 node.question = this.$t('logQuestions.q' + (node.id))
+                if (node.id === 8 || node.id === 9) {
+                  node.answer.sort((a, b) => {
+                    return a.index - b.index
+                  })
+                }
               }
               this.logList = answerlogArr.sort((a, b) => {
                 return a.id - b.id
@@ -541,7 +546,7 @@
         } else {
           return `无`
         }
-      }
+      },
     }
   }
 </script>
