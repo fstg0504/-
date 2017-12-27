@@ -407,7 +407,7 @@
           rowOpt.splice(OtherAnimalIndex[0], 0, ...OtherAnima)
           const DailyContactOtherAnimal = []
           const DailyContactOtherAnimalIndex = getIndexInArrayByObject(rowOpt, { tHeader: '日常接触其它动物', filterVal: 'DailyContactOtherAnimal' })
-          for (let i = 0; i < 9; i++) {
+          for (let i = 0; i < 15; i++) {
             DailyContactOtherAnimal.push({ tHeader: `日常接触动物${Number(i) + 1}`, filterVal: `DailyContactAnimal${Number(i) + 1}` })
             DailyContactOtherAnimal.push({ tHeader: `日常接触动物频率${Number(i) + 1}`, filterVal: `DailyContactAnimalHZ${Number(i) + 1}` })
           }
@@ -762,28 +762,26 @@
                 }
                 case 8: {
                   node.answer.forEach((item, i) => {
-                    if (item.type === '其他' || item.type === 'Others') {
+                    if (item.index === 15 || item.type === '其他' || item.type === 'Others') {
                       result.OtherAnimal = '是'
                       result.OtherAnimalName = item.name || ''
                       result.OtherAnimalNum = item.num || ''
                     } else {
-                      result[`animal${Number(i) + 1}`] = item.type || ''
-                      result[`animalNum${Number(i) + 1}`] = item.num || ''
-                      result.OtherAnimal = ''
+                      result[`animal${Number(item.index) + 1}`] = item.type || ''
+                      result[`animalNum${Number(item.index) + 1}`] = item.num || ''
                     }
                   })
                   break
                 }
                 case 9: {
                   node.answer.forEach((item, i) => {
-                    if (item.type === '其他' || item.type === 'Others') {
+                    if (item.index === 15 || item.type === '其他' || item.type === 'Others') {
                       result.DailyContactOtherAnimal = '是'
                       result.DailyContactOtherAnimalName = item.name || ''
                       result.DailyContactOtherAnimalHZ = item.hz || ''
                     } else {
-                      result[`DailyContactAnimal${Number(i) + 1}`] = item.type || ''
-                      result[`DailyContactAnimalHZ${Number(i) + 1}`] = item.hz || ''
-                      result.DailyContactOtherAnimal = ''
+                      result[`DailyContactAnimal${Number(item.index) + 1}`] = item.type || ''
+                      result[`DailyContactAnimalHZ${Number(item.index) + 1}`] = item.hz || ''
                     }
                   })
                   break
