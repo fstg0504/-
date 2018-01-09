@@ -59,9 +59,9 @@
         </el-option>
       </el-select>
       <el-button class="filter-item" type="primary" v-waves icon="search" @click="handleFilter">{{$t('utils.search')}}</el-button>
-      <el-button class="filter-item" type="primary" icon="document" @click="handleDownload">导出当前页数据</el-button>
-      <el-button class="filter-item" type="primary" icon="document" @click="handleDownloadByAnswer">根据题目导出数据</el-button>
-      <el-button class="filter-item" type="primary" icon="document" @click="handleBatchDownloadByGetLocalLog(3)">批量导出定位信息</el-button>
+      <el-button v-if="ad_level.indexOf('1')>-1" class="filter-item" type="primary" icon="document" @click="handleDownload">导出当前页数据</el-button>
+      <el-button v-if="ad_level.indexOf('1')>-1" class="filter-item" type="primary" icon="document" @click="handleDownloadByAnswer">根据题目导出数据</el-button>
+      <el-button v-if="ad_level.indexOf('1')>-1" class="filter-item" type="primary" icon="document" @click="handleBatchDownloadByGetLocalLog(3)">批量导出定位信息</el-button>
     </div>
 
     <el-table :key='tableKey' height="450" :data="list" v-loading="listLoading" :element-loading-text="$t('utils.loadText')" border fit highlight-current-row style="width: 100%">
@@ -138,6 +138,7 @@
   import waves from '@/directive/waves/index' // 水波纹指令
   import { parseTime } from '@/utils'
   import { isJSON, getIndexInArrayByObject } from '@/utils'
+  import { mapGetters } from 'vuex'
 
   const calendarTypeOptions = [
     { key: '2', display_name: '非指定人群' },
@@ -199,6 +200,12 @@
     },
     created() {
       this.getList()
+    },
+    computed: {
+      ...mapGetters([
+        'roles',
+        'ad_level'
+      ])
     },
     methods: {
       getList() {
